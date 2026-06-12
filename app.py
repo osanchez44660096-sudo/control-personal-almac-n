@@ -591,7 +591,7 @@ def registrar_asistencia():
         <a href="/asistencia">VOLVER</a>
         """
 
-   ahora_lima().strftime
+    ahora = ahora_lima()
     hoy = ahora.strftime("%d/%m/%Y")
 
     # Verificar si ya marcó hoy
