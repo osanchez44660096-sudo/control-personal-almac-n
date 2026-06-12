@@ -1,20 +1,23 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 import pytz
-LIMA = pytz.timezone("America/Lima")
-
-def ahora_lima():
-    return datetime.now(LIMA).replace(tzinfo=None)
 import qrcode
 import os
 import openpyxl
 import io
 from flask import send_file
 
+LIMA = pytz.timezone("America/Lima")
+
+def ahora_lima():
+    return datetime.now(LIMA).replace(tzinfo=None)
+
 from flask import request
 app = Flask(__name__)
-<
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///almacen.db'
+
+DB_PATH = os.environ.get("DATABASE_URL", "sqlite:///almacen.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_PATH
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
