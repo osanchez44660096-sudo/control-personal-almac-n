@@ -1,0 +1,6 @@
+Flask
+Flask-SQLAlchemy
+gunicorn
+qrcode
+openpyxl
+Pillow
