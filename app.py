@@ -830,7 +830,7 @@ NUEVO TRABAJADOR
     html += "</table>"
     html += """
     <br><br>
-    <a href="/exportar_asistencia">📥 DESCARGAR EXCEL</a>
+    <a href="/exportar_trabajadores">📥 DESCARGAR EXCEL</a>
     """
     return html
 
@@ -2786,6 +2786,23 @@ def cargar_trabajadores_masivo():
             total += 1
     db.session.commit()
     return f"<h2>✅ {total} trabajadores cargados correctamente</h2><a href='/trabajadores'>VER LISTA</a>"
+
+@app.route("/exportar_trabajadores")
+def exportar_trabajadores():
+    trabajadores = Trabajador.query.order_by(Trabajador.codigo).all()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Trabajadores"
+    ws.append(["CODIGO", "NOMBRE", "CONDICION", "AREA", "SUPERVISOR", "ESTADO"])
+    for t in trabajadores:
+        ws.append([t.codigo, t.nombre, t.condicion, t.area, t.supervisor, t.estado])
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or "")) for cell in col)
+        ws.column_dimensions[col[0].column_letter].width = max_len + 4
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    return send_file(output, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", as_attachment=True, download_name="trabajadores.xlsx")
 
 if __name__ == "__main__":
     app.run(
