@@ -2736,6 +2736,57 @@ def generar_mensual_formato():
 with app.app_context():
     db.create_all()
 
+@app.route("/cargar_trabajadores_masivo")
+def cargar_trabajadores_masivo():
+    trabajadores = [
+        ("ALM-0001", "MANUEL IGNACIO VALENCIA MANRIQUE", "FIJO", "PACKING", "JOSE"),
+        ("ALM-0002", "ANDRÉS SANTOS JULCA ZURITA", "FIJO", "PACKING", "JOSE"),
+        ("ALM-0003", "JOSUE RUBÉN CHIRINOS DE LA CRUZ", "FIJO", "PACKING", "JOSE"),
+        ("ALM-0004", "JOSÉ ALBERTO BALTAZAR NAPÁN", "FIJO", "PACKING", "JOSE"),
+        ("ALM-0005", "DAVID ISAAC CORNEJO OROPEZA", "CAMPAÑA", "PACKING", "JOSE"),
+        ("ALM-0006", "RAÚL SNAIDES SANGANÍA RAMÍREZ", "CAMPAÑA", "PACKING", "JOSE"),
+        ("ALM-0007", "ÁNGEL DE JESÚS NAVARRETE JAVIER", "CAMPAÑA", "PACKING", "JOSE"),
+        ("ALM-0008", "EDWIN MARCOS VENTURA CAYTUERO", "FIJO", "PICKING", "JEAN"),
+        ("ALM-0009", "FLAZ COTAQUISPE QUISPE", "FIJO", "PICKING", "JEAN"),
+        ("ALM-0010", "JOAQUÍN SEBASTIÁN MAZA JIMÉNEZ", "FIJO", "PICKING", "JEAN"),
+        ("ALM-0011", "JOHAN SINCAS GUTIÉRREZ", "FIJO", "PICKING", "JEAN"),
+        ("ALM-0012", "JHON MARK CAJUSOL INOÑAN", "CAMPAÑA", "PICKING", "JEAN"),
+        ("ALM-0013", "JOSÉ ÁNGEL IPANAQUÉ SILVA", "CAMPAÑA", "PICKING", "JEAN"),
+        ("ALM-0014", "JEAN CARLO VEGA CALLAN", "CAMPAÑA", "PICKING", "JEAN"),
+        ("ALM-0015", "FRANCISCO CRUZ", "FIJO", "RECEPCION", "FRANCISCO"),
+        ("ALM-0016", "VICTOR GUSTAVO TORRES YATACO", "FIJO", "RECEPCION", "FRANCISCO"),
+        ("ALM-0017", "GABRIEL IVAN ASTO SALAZAR", "FIJO", "RECEPCION", "FRANCISCO"),
+        ("ALM-0018", "PIERO ALESSANDRO ASENCIO LOZANO", "FIJO", "RECEPCION", "FRANCISCO"),
+        ("ALM-0019", "ROBERTO CARLOS SALAZAR HUARACA", "FIJO", "RECEPCION", "FRANCISCO"),
+        ("ALM-0020", "CHRISTIAN ORDINOLA QUISPE", "FIJO", "RECEPCION", "FRANCISCO"),
+        ("ALM-0021", "RONALD RODRIGUEZ VENTURA", "FIJO", "RECEPCION", "FRANCISCO"),
+        ("ALM-0022", "EUDES CERRON QUISPEAYALA", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0023", "DENIS MANUEL MANCO MANCO", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0024", "WILLIANS SÁNCHEZ LÓPEZ", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0025", "MARIO DANIEL GONZALO ZÁRATE HIDALGO", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0026", "CARLOS ISMAEL LÓPEZ VERA", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0027", "LUIS ALBERTO SANDOVAL DURAND", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0028", "LUIS REYES PRADO", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0029", "THELMA GOMEZ CHUQUIHUAMANI", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0030", "ROCIO MADRID ESCOBAR", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
+        ("ALM-0031", "HAROLD GUEVARA LLUSEMA", "CAMPAÑA", "REPOSICION", "JAROLD"),
+        ("ALM-0032", "JORDAN LANFRANCO LUCAS", "FIJO", "REPOSICION", "JAROLD"),
+        ("ALM-0033", "JEREMI RENATO RAMOS VILLARREAL", "FIJO", "REPOSICION", "JAROLD"),
+        ("ALM-0034", "JEFFERSON JESUS CRUZ CABANILLAS", "FIJO", "REPOSICION", "JAROLD"),
+        ("ALM-0035", "ANDRÉS FELIPE CÓRDOVA SECLÉN", "CAMPAÑA", "REPOSICION", "JAROLD"),
+        ("ALM-0036", "FERNANDO MANUEL MIRANDA PÉREZ", "CAMPAÑA", "REPOSICION", "JAROLD"),
+    ]
+    total = 0
+    for codigo, nombre, condicion, area, supervisor in trabajadores:
+        existe = Trabajador.query.filter_by(codigo=codigo).first()
+        if not existe:
+            t = Trabajador(codigo=codigo, nombre=nombre, condicion=condicion,
+                          area=area, supervisor=supervisor, estado="ACTIVO")
+            db.session.add(t)
+            total += 1
+    db.session.commit()
+    return f"<h2>✅ {total} trabajadores cargados correctamente</h2><a href='/trabajadores'>VER LISTA</a>"
+
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
