@@ -212,11 +212,6 @@ def dashboard():
     if request.method == "POST":
         if usuario not in USUARIOS or USUARIOS[usuario]["password"] != password:
             return """
-            ...error...
-            """
-        session["usuario"] = usuario
-        session["rol"] = USUARIOS[usuario]["rol"]
-    return """
 <!DOCTYPE html>
 <html>
 <head>
