@@ -209,13 +209,13 @@ def dashboard():
     usuario = request.form.get("usuario", "").upper()
     password = request.form.get("password", "")
 
-if request.method == "POST":
-    if usuario not in USUARIOS or USUARIOS[usuario]["password"] != password:
-        return """
-        ...error...
-        """
-    session["usuario"] = usuario
-    session["rol"] = USUARIOS[usuario]["rol"]
+    if request.method == "POST":
+        if usuario not in USUARIOS or USUARIOS[usuario]["password"] != password:
+            return """
+            ...error...
+            """
+        session["usuario"] = usuario
+        session["rol"] = USUARIOS[usuario]["rol"]
     return """
 <!DOCTYPE html>
 <html>
