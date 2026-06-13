@@ -807,6 +807,7 @@ NUEVO TRABAJADOR
     <th>AREA</th>
     <th>CONDICION</th>
     <th>ESTADO</th>
+    <th>EDITAR</th>
     <th>MOVER</th>
     <th>CESAR</th>
 </tr>
@@ -822,6 +823,11 @@ NUEVO TRABAJADOR
     <td>{t.condicion}</td>
     <td>{t.estado}</td>
 
+    <td>
+        <a href="/editar/{t.id}">
+        EDITAR
+        </a>
+    </td>
     <td>
         <a href="/mover/{t.id}">
         MOVER
@@ -2817,6 +2823,38 @@ def exportar_trabajadores():
     wb.save(output)
     output.seek(0)
     return send_file(output, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", as_attachment=True, download_name="trabajadores.xlsx")
+@app.route("/editar/<int:id>", methods=["GET", "POST"])
+def editar(id):
+    t = Trabajador.query.get(id)
+    if request.method == "POST":
+        t.nombre = request.form["nombre"]
+        t.condicion = request.form["condicion"]
+        t.area = request.form["area"]
+        t.supervisor = request.form["supervisor"]
+        db.session.commit()
+        return "<h2>✅ Actualizado</h2><a href='/trabajadores'>VOLVER</a>"
+    return f"""
+<h2>EDITAR TRABAJADOR</h2>
+<form action="/editar/{t.id}" method="post">
+    Nombre:<br><input type="text" name="nombre" value="{t.nombre}"><br><br>
+    Condición:<br>
+    <select name="condicion">
+        <option {'selected' if t.condicion=='FIJO' else ''}>FIJO</option>
+        <option {'selected' if t.condicion=='DOTACION' else ''}>DOTACION</option>
+        <option {'selected' if t.condicion=='CAMPAÑA' else ''}>CAMPAÑA</option>
+    </select><br><br>
+    Área:<br>
+    <select name="area">
+        <option {'selected' if t.area=='RECEPCION' else ''}>RECEPCION</option>
+        <option {'selected' if t.area=='REPOSICION' else ''}>REPOSICION</option>
+        <option {'selected' if t.area=='PICKING' else ''}>PICKING</option>
+        <option {'selected' if t.area=='PACKING' else ''}>PACKING</option>
+    </select><br><br>
+    Supervisor:<br><input type="text" name="supervisor" value="{t.supervisor}"><br><br>
+    <button type="submit">GUARDAR</button>
+</form>
+<a href="/trabajadores">VOLVER</a>
+"""
 
 if __name__ == "__main__":
     app.run(
