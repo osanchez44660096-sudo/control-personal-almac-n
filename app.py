@@ -8,7 +8,6 @@ import openpyxl
 import io
 from flask import send_file
 from flask import session
-app.secret_key = "control_personal_2026"
 
 LIMA = pytz.timezone("America/Lima")
 
@@ -17,6 +16,7 @@ def ahora_lima():
 
 from flask import request
 app = Flask(__name__)
+app.secret_key = "control_personal_2026"
 
 DB_PATH = os.environ.get("DATABASE_URL", "sqlite:///almacen.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_PATH
