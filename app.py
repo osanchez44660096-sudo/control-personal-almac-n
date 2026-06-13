@@ -7,6 +7,8 @@ import os
 import openpyxl
 import io
 from flask import send_file
+from flask import session
+app.secret_key = "control_personal_2026"
 
 LIMA = pytz.timezone("America/Lima")
 
@@ -44,6 +46,7 @@ class Asistencia(db.Model):
     hora = db.Column(db.String(20))
     supervisor = db.Column(db.String(50))
     tipo = db.Column(db.String(30))
+    escaneado_por = db.Column(db.String(50))  # NUEVO
 
 class Movimiento(db.Model):
 
@@ -206,8 +209,13 @@ def dashboard():
     usuario = request.form.get("usuario", "").upper()
     password = request.form.get("password", "")
 
-    if request.method == "POST":
-        if usuario not in USUARIOS or USUARIOS[usuario]["password"] != password:
+if request.method == "POST":
+    if usuario not in USUARIOS or USUARIOS[usuario]["password"] != password:
+        return """
+        ...error...
+        """
+    session["usuario"] = usuario
+    session["rol"] = USUARIOS[usuario]["rol"]
             return """
 <!DOCTYPE html>
 <html>
@@ -636,7 +644,8 @@ b {{ color:#fff; }}
         fecha=hoy,
         hora=ahora.strftime("%H:%M:%S"),
         supervisor=trabajador.supervisor,
-        tipo="ASISTENCIA"
+        tipo="ASISTENCIA",
+        escaneado_por=session.get("usuario", "DESCONOCIDO")
     )
     db.session.add(registro)
     db.session.commit()
@@ -2769,7 +2778,7 @@ def cargar_trabajadores_masivo():
         ("ALM-0028", "LUIS REYES PRADO", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
         ("ALM-0029", "THELMA GOMEZ CHUQUIHUAMANI", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
         ("ALM-0030", "ROCIO MADRID ESCOBAR", "CAMPAÑA", "RECEPCION", "FRANCISCO"),
-        ("ALM-0031", "HAROLD GUEVARA LLUSEMA", "CAMPAÑA", "REPOSICION", "JAROLD"),
+        ("ALM-0031", "JAROLD GUEVARA LLUSEMA", "CAMPAÑA", "REPOSICION", "JAROLD"),
         ("ALM-0032", "JORDAN LANFRANCO LUCAS", "FIJO", "REPOSICION", "JAROLD"),
         ("ALM-0033", "JEREMI RENATO RAMOS VILLARREAL", "FIJO", "REPOSICION", "JAROLD"),
         ("ALM-0034", "JEFFERSON JESUS CRUZ CABANILLAS", "FIJO", "REPOSICION", "JAROLD"),
