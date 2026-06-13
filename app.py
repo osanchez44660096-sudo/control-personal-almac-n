@@ -248,6 +248,8 @@ button { width:100%; padding:15px; background:linear-gradient(90deg,#1a56db,#3b8
 </body>
 </html>
 """
+        session["usuario"] = usuario
+        session["rol"] = USUARIOS[usuario]["rol"]
     from datetime import date
 
     hoy = date.today().strftime("%d/%m/%Y")
