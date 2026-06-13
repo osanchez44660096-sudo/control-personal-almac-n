@@ -2744,6 +2744,11 @@ def generar_mensual_formato():
 
 with app.app_context():
     db.create_all()
+    # Agregar columna si no existe
+    try:
+        db.engine.execute("ALTER TABLE asistencia ADD COLUMN escaneado_por VARCHAR(50)")
+    except:
+        pass
 
 @app.route("/cargar_trabajadores_masivo")
 def cargar_trabajadores_masivo():
