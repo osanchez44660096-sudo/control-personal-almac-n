@@ -908,7 +908,7 @@ def guardar_movimiento(id):
 
     db.session.commit()
 
-return """
+    return """
     <h2>MOVIMIENTO REGISTRADO</h2>
     <a href="/trabajadores">VOLVER A LISTA</a>
     &nbsp;&nbsp;
@@ -925,13 +925,13 @@ def cesar(id):
 
     db.session.commit()
 
-return """
+    return """
     <h2>TRABAJADOR CESADO CORRECTAMENTE</h2>
     <a href="/trabajadores">VOLVER A LISTA</a>
     &nbsp;&nbsp;
     <a href="/dashboard">DASHBOARD</a>
     """
-    
+
 @app.route("/horas_extras")
 def horas_extras():
     return """
