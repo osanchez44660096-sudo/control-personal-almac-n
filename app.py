@@ -2406,6 +2406,7 @@ def reporte_diario():
         if t.codigo in codigos_presentes:
             registro = codigos_presentes[t.codigo]
             estado = "P"
+            hora = registro.hora
             escaneado = registro.escaneado_por or "—"
             color = "#16a34a"
             bg = "#f0fdf4"
@@ -2425,7 +2426,7 @@ def reporte_diario():
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:13px;font-weight:600;">{t.nombre}</td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;">{t.area}</td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;">{t.supervisor}</td>
-            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:14px;font-weight:800;text-align:center;color:{color};">{estado}</td>
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;color:{color};font-weight:800;">{estado}<br><span style="font-size:11px;font-weight:400;color:#64748b;">{hora if estado == "P" else ""}</span></td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;color:#64748b;">{escaneado}</td>
         </tr>
         """
