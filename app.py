@@ -908,12 +908,11 @@ def guardar_movimiento(id):
 
     db.session.commit()
 
-    return """
+return """
     <h2>MOVIMIENTO REGISTRADO</h2>
-
-    <a href="/trabajadores">
-    VOLVER
-    </a>
+    <a href="/trabajadores">VOLVER A LISTA</a>
+    &nbsp;&nbsp;
+    <a href="/dashboard">DASHBOARD</a>
     """
 
 
@@ -926,13 +925,13 @@ def cesar(id):
 
     db.session.commit()
 
-    return """
+return """
     <h2>TRABAJADOR CESADO CORRECTAMENTE</h2>
-
-    <a href="/trabajadores">
-    VOLVER
-    </a>
+    <a href="/trabajadores">VOLVER A LISTA</a>
+    &nbsp;&nbsp;
+    <a href="/dashboard">DASHBOARD</a>
     """
+    
 @app.route("/horas_extras")
 def horas_extras():
     return """
@@ -2830,7 +2829,7 @@ def editar(id):
         t.area = request.form["area"]
         t.supervisor = request.form["supervisor"]
         db.session.commit()
-        return "<h2>✅ Actualizado</h2><a href='/trabajadores'>VOLVER</a>"
+        return "<h2>✅ Actualizado</h2><a href='/trabajadores'>VOLVER A LISTA</a> &nbsp;&nbsp; <a href='/dashboard'>DASHBOARD</a>"
     return f"""
 <h2>EDITAR TRABAJADOR</h2>
 <form action="/editar/{t.id}" method="post">
