@@ -2389,7 +2389,11 @@ def reporte_diario():
     from datetime import date
     hoy = date.today().strftime("%d/%m/%Y")
 
-    trabajadores_activos = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.nombre).all()
+    orden_area = {"RECEPCION": 1, "REPOSICION": 2, "PICKING": 3, "PACKING": 4}
+    trabajadores_activos = sorted(
+        Trabajador.query.filter_by(estado="ACTIVO").all(),
+        key=lambda t: (orden_area.get(t.area, 99), t.nombre)
+    )
 
     presentes = Asistencia.query.filter_by(fecha=hoy).all()
     codigos_presentes = {r.codigo: r for r in presentes}
