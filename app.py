@@ -2520,7 +2520,7 @@ def exportar_reporte_diario():
     from datetime import date
     hoy = date.today().strftime("%d/%m/%Y")
 
-    trabajadores_activos = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.nombre).all()
+    trabajadores_activos = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.area, Trabajador.nombre).all()
     codigos_area = {t.codigo: t.area for t in trabajadores_activos}
 
     presentes = Asistencia.query.filter_by(fecha=hoy).all()
