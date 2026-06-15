@@ -2390,81 +2390,128 @@ def reporte_diario():
     hoy = date.today().strftime("%d/%m/%Y")
 
     trabajadores_activos = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.nombre).all()
-    codigos_area = {t.codigo: t.area for t in trabajadores_activos}
 
     presentes = Asistencia.query.filter_by(fecha=hoy).all()
-    codigos_presentes = set(r.codigo for r in presentes)
+    codigos_presentes = {r.codigo: r for r in presentes}
 
     incidencias_activas = Incidencia.query.filter_by(activo=True).all()
     codigos_incidencia = {i.codigo: i for i in incidencias_activas}
 
-    ausentes = [t for t in trabajadores_activos if t.codigo not in codigos_presentes]
+    total = len(trabajadores_activos)
+    total_presentes = len(presentes)
+    total_ausentes = total - total_presentes
 
-    html = f"""
-    <h1>REPORTE DIARIO</h1>
-    <p><b>Fecha: {hoy}</b></p>
-    <hr>
+    filas = ""
+    for t in trabajadores_activos:
+        if t.codigo in codigos_presentes:
+            registro = codigos_presentes[t.codigo]
+            estado = "P"
+            escaneado = registro.escaneado_por or "—"
+            color = "#16a34a"
+            bg = "#f0fdf4"
+        else:
+            incidencia = codigos_incidencia.get(t.codigo)
+            if incidencia:
+                estado = incidencia.tipo
+            else:
+                estado = "F"
+            escaneado = "—"
+            color = "#dc2626" if estado == "F" else "#d97706"
+            bg = "#fef2f2" if estado == "F" else "#fffbeb"
 
-    <h2>✅ PRESENTES ({len(presentes)})</h2>
-    <table border="1" cellpadding="5">
-    <tr>
-        <th>HORA</th>
-        <th>CODIGO</th>
-        <th>NOMBRE</th>
-        <th>AREA</th>
-    </tr>
-    """
-
-    for r in presentes:
-        area = codigos_area.get(r.codigo, "")
-        html += f"""
-        <tr>
-            <td>{r.hora}</td>
-            <td>{r.codigo}</td>
-            <td>{r.nombre}</td>
-            <td>{area}</td>
+        filas += f"""
+        <tr style="background:{bg};">
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;color:#475569;">{t.codigo}</td>
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:13px;font-weight:600;">{t.nombre}</td>
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;">{t.area}</td>
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;">{t.supervisor}</td>
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:14px;font-weight:800;text-align:center;color:{color};">{estado}</td>
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;color:#64748b;">{escaneado}</td>
         </tr>
         """
 
-    html += f"""
-    </table>
-    <br>
+    return f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Diario</title>
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:'Segoe UI',sans-serif; background:#f1f5f9; padding:16px; }}
+.header {{ background:linear-gradient(90deg,#1e3a5f,#1a56db); border-radius:12px; padding:16px 20px; margin-bottom:16px; color:#fff; display:flex; justify-content:space-between; align-items:center; }}
+.header h1 {{ font-size:16px; font-weight:700; letter-spacing:1px; }}
+.header .fecha {{ font-size:13px; background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:20px; }}
+.kpis {{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }}
+.kpi {{ background:#fff; border-radius:10px; padding:12px 16px; text-align:center; border-top:3px solid #3b82f6; }}
+.kpi.green {{ border-top-color:#16a34a; }}
+.kpi.red {{ border-top-color:#dc2626; }}
+.kpi-value {{ font-size:28px; font-weight:800; color:#1e293b; }}
+.kpi.green .kpi-value {{ color:#16a34a; }}
+.kpi.red .kpi-value {{ color:#dc2626; }}
+.kpi-label {{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-top:4px; }}
+.leyenda {{ background:#fff; border-radius:10px; padding:10px 16px; margin-bottom:16px; font-size:11px; color:#64748b; }}
+table {{ width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; }}
+thead {{ background:#1e293b; }}
+thead th {{ padding:10px; color:#fff; font-size:11px; text-transform:uppercase; letter-spacing:1px; text-align:center; }}
+thead th:nth-child(2) {{ text-align:left; }}
+.btns {{ display:flex; gap:10px; margin-top:16px; }}
+.btn {{ padding:12px 20px; border-radius:8px; font-size:13px; font-weight:700; text-decoration:none; color:#fff; }}
+.btn-excel {{ background:linear-gradient(90deg,#16a34a,#22c55e); }}
+.btn-dash {{ background:linear-gradient(90deg,#1a56db,#3b82f6); }}
+</style>
+</head>
+<body>
 
-    <h2>❌ AUSENTES ({len(ausentes)})</h2>
-    <table border="1" cellpadding="5">
+<div class="header">
+  <h1>📅 REPORTE DIARIO</h1>
+  <div class="fecha">{hoy}</div>
+</div>
+
+<div class="kpis">
+  <div class="kpi blue">
+    <div class="kpi-value">{total}</div>
+    <div class="kpi-label">Total Activos</div>
+  </div>
+  <div class="kpi green">
+    <div class="kpi-value">{total_presentes}</div>
+    <div class="kpi-label">Presentes</div>
+  </div>
+  <div class="kpi red">
+    <div class="kpi-value">{total_ausentes}</div>
+    <div class="kpi-label">Ausentes</div>
+  </div>
+</div>
+
+<div class="leyenda">
+  P = Presente &nbsp;|&nbsp; F = Falta &nbsp;|&nbsp; DM = Descanso Médico &nbsp;|&nbsp; V = Vacaciones &nbsp;|&nbsp; LSG = Licencia Sin Goce
+</div>
+
+<table>
+  <thead>
     <tr>
-        <th>CODIGO</th>
-        <th>NOMBRE</th>
-        <th>AREA</th>
-        <th>INCIDENCIA</th>
+      <th>Código</th>
+      <th style="text-align:left;">Nombre</th>
+      <th>Área</th>
+      <th>Supervisor</th>
+      <th>Asist.</th>
+      <th>Escaneado por</th>
     </tr>
-    """
+  </thead>
+  <tbody>
+    {filas}
+  </tbody>
+</table>
 
-    for t in ausentes:
-        incidencia = codigos_incidencia.get(t.codigo)
-        tipo = f"{incidencia.tipo} — {incidencia.descripcion}" if incidencia else "FALTA"
-        html += f"""
-        <tr>
-            <td>{t.codigo}</td>
-            <td>{t.nombre}</td>
-            <td>{t.area}</td>
-            <td><b>{tipo}</b></td>
-        </tr>
-        """
+<div class="btns">
+  <a href="/exportar_reporte_diario" class="btn btn-excel">📥 EXPORTAR EXCEL</a>
+  <a href="/dashboard" class="btn btn-dash">⬅ DASHBOARD</a>
+</div>
 
-    html += f"""
-    </table>
-    <br>
-    <p>Total activos: <b>{len(trabajadores_activos)}</b> |
-    Presentes: <b>{len(presentes)}</b> |
-    Ausentes: <b>{len(ausentes)}</b></p>
-    <br>
-    <a href="/exportar_reporte_diario">📥 EXPORTAR EXCEL</a>
-    &nbsp;&nbsp;
-    <a href="/dashboard">DASHBOARD</a>
-    """
-
-    return html
+</body>
+</html>
+"""
 
 @app.route("/exportar_reporte_diario")
 def exportar_reporte_diario():
