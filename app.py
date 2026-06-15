@@ -2426,7 +2426,6 @@ def reporte_diario():
 
         filas += f"""
         <tr style="background:{bg};">
-            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;color:#475569;">{t.codigo}</td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:13px;font-weight:600;">{t.nombre}</td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;">{t.area}</td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;">{t.supervisor}</td>
@@ -2496,7 +2495,6 @@ thead th:nth-child(2) {{ text-align:left; }}
 <table>
   <thead>
     <tr>
-      <th>Código</th>
       <th style="text-align:left;">Nombre</th>
       <th>Área</th>
       <th>Supervisor</th>
