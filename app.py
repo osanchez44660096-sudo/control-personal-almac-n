@@ -2518,44 +2518,33 @@ thead th:nth-child(2) {{ text-align:left; }}
 
 @app.route("/exportar_reporte_diario")
 def exportar_reporte_diario():
-
     from datetime import date
     hoy = date.today().strftime("%d/%m/%Y")
 
-    trabajadores_activos = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.area, Trabajador.nombre).all()
-    codigos_area = {t.codigo: t.area for t in trabajadores_activos}
+    orden_area = {"RECEPCION": 1, "REPOSICION": 2, "PICKING": 3, "PACKING": 4}
+    trabajadores_activos = sorted(
+        Trabajador.query.filter_by(estado="ACTIVO").all(),
+        key=lambda t: (orden_area.get(t.area, 99), t.nombre)
+    )
 
     presentes = Asistencia.query.filter_by(fecha=hoy).all()
-    codigos_presentes = set(r.codigo for r in presentes)
-
-    incidencias_activas = Incidencia.query.filter_by(activo=True).all()
-    codigos_incidencia = {i.codigo: i for i in incidencias_activas}
+    codigos_presentes = {r.codigo: r for r in presentes}
 
     wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Reporte Diario"
+    ws.append([f"REPORTE DIARIO — {hoy}"])
+    ws.append([])
+    ws.append(["HORA", "NOMBRE", "AREA"])
 
-    ws1 = wb.active
-    ws1.append([f"REPORTE DIARIO — {hoy}"])
-    ws1.append([])
-    ws1.title = "Presentes"
-    ws1.append(["HORA", "CODIGO", "NOMBRE", "AREA", "SUPERVISOR"])
-    for r in presentes:
-        area = codigos_area.get(r.codigo, "")
-        ws1.append([r.hora, r.codigo, r.nombre, area, r.supervisor])
-
-    ws2 = wb.create_sheet("Ausentes")
-    ws2.append([f"REPORTE DIARIO — {hoy}"])
-    ws2.append([])
-    ws2.append(["CODIGO", "NOMBRE", "AREA", "INCIDENCIA"])
     for t in trabajadores_activos:
-        if t.codigo not in codigos_presentes:
-            incidencia = codigos_incidencia.get(t.codigo)
-            tipo = f"{incidencia.tipo} - {incidencia.descripcion}" if incidencia else "FALTA"
-            ws2.append([t.codigo, t.nombre, t.area, tipo])
+        if t.codigo in codigos_presentes:
+            registro = codigos_presentes[t.codigo]
+            ws.append([registro.hora, t.nombre, t.area])
 
-    for ws in [ws1, ws2]:
-        for col in ws.columns:
-            max_len = max(len(str(cell.value or "")) for cell in col)
-            ws.column_dimensions[col[0].column_letter].width = max_len + 4
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or "")) for cell in col)
+        ws.column_dimensions[col[0].column_letter].width = max_len + 4
 
     output = io.BytesIO()
     wb.save(output)
