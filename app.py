@@ -2535,12 +2535,19 @@ def exportar_reporte_diario():
     ws.title = "Reporte Diario"
     ws.append([f"REPORTE DIARIO — {hoy}"])
     ws.append([])
-    ws.append(["HORA", "NOMBRE", "AREA"])
+    incidencias_activas = Incidencia.query.filter_by(activo=True).all()
+    codigos_incidencia = {i.codigo: i for i in incidencias_activas}
+
+    ws.append(["HORA", "NOMBRE", "AREA", "ASIST."])
 
     for t in trabajadores_activos:
         if t.codigo in codigos_presentes:
             registro = codigos_presentes[t.codigo]
-            ws.append([registro.hora, t.nombre, t.area])
+            ws.append([registro.hora, t.nombre, t.area, "P"])
+        else:
+            incidencia = codigos_incidencia.get(t.codigo)
+            estado = incidencia.tipo if incidencia else "F"
+            ws.append(["", t.nombre, t.area, estado])
 
     for col in ws.columns:
         max_len = max(len(str(cell.value or "")) for cell in col)
