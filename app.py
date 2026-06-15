@@ -2630,7 +2630,7 @@ def generar_mensual_formato():
 
     # Trabajadores ordenados por condición laboral luego nombre
     orden_condicion = {"FIJO": 1, "DOTACION": 2, "CAMPAÑA": 3}
-    trabajadores = Trabajador.query.order_by(Trabajador.condicion, Trabajador.nombre).all()
+    trabajadores = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.condicion, Trabajador.nombre).all()
 
     # Registros del mes
     asistencias = set()
