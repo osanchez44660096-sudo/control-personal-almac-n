@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import pytz
@@ -608,7 +608,12 @@ def registrar_asistencia():
     ).first()
 
     if ya_registro:
-        return f"""
+        session["resultado"] = {
+            "tipo": "ya_registrado",
+            "nombre": trabajador.nombre,
+            "hora": ya_registro.hora
+        }
+        return redirect("/resultado_asistencia")
 <!DOCTYPE html>
 <html>
 <head>
@@ -649,6 +654,50 @@ b {{ color:#fff; }}
     db.session.add(registro)
     db.session.commit()
 
+    session["resultado"] = {
+        "tipo": "exitoso",
+        "nombre": trabajador.nombre,
+        "area": trabajador.area,
+        "hora": ahora.strftime("%H:%M:%S")
+    }
+    return redirect("/resultado_asistencia")
+
+@app.route("/resultado_asistencia")
+def resultado_asistencia():
+    resultado = session.pop("resultado", None)
+    if not resultado:
+        return redirect("/asistencia")
+
+    if resultado["tipo"] == "ya_registrado":
+        return f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:'Segoe UI',sans-serif; background:#0f172a; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }}
+.card {{ background:#1e293b; border-radius:16px; padding:32px 24px; width:100%; max-width:380px; text-align:center; }}
+.icon {{ font-size:48px; margin-bottom:16px; }}
+h2 {{ color:#fbbf24; font-size:20px; margin-bottom:10px; }}
+p {{ color:#94a3b8; font-size:14px; margin-bottom:6px; }}
+b {{ color:#fff; }}
+.btn {{ display:block; margin-top:24px; padding:14px; background:linear-gradient(90deg,#1a56db,#3b82f6); border-radius:10px; color:#fff; font-size:16px; font-weight:700; text-decoration:none; }}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">⚠️</div>
+  <h2>Ya registrado hoy</h2>
+  <p><b>{resultado["nombre"]}</b></p>
+  <p>Hora de registro: <b>{resultado["hora"]}</b></p>
+  <a href="/asistencia" class="btn">SIGUIENTE</a>
+</div>
+</body>
+</html>
+        """
+
     return f"""
 <!DOCTYPE html>
 <html>
@@ -672,14 +721,15 @@ b {{ color:#fff; }}
 <div class="card">
   <div class="icon">✅</div>
   <h2>Asistencia Registrada</h2>
-  <p><b>{trabajador.nombre}</b></p>
-  <div class="area">{trabajador.area}</div>
-  <div class="hora">{ahora.strftime("%H:%M:%S")}</div>
+  <p><b>{resultado["nombre"]}</b></p>
+  <div class="area">{resultado["area"]}</div>
+  <div class="hora">{resultado["hora"]}</div>
   <a href="/asistencia" class="btn">SIGUIENTE</a>
 </div>
 </body>
 </html>
     """
+
 # =========================
 # TRABAJADORES
 # =========================
