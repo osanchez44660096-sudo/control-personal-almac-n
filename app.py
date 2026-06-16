@@ -869,6 +869,8 @@ NUEVO TRABAJADOR
     html += """
     <br><br>
     <a href="/exportar_trabajadores">📥 DESCARGAR EXCEL</a>
+    <br><br>
+    <a href="/dashboard">⬅️ VOLVER AL DASHBOARD</a>
     """
     return html
 
@@ -1398,6 +1400,8 @@ def reporte_movimientos():
     html += """
     <br><br>
     <a href="/exportar_asistencia">📥 DESCARGAR EXCEL</a>
+    <br><br>
+    <a href="/dashboard">⬅️ VOLVER AL DASHBOARD</a>
     """
     return html
 
