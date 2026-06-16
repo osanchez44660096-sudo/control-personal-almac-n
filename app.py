@@ -99,9 +99,9 @@ class Incidencia(db.Model):
 # =========================
 
 USUARIOS = {
-    "JOSE":      {"password": "123",      "rol": "SUPERVISOR"},
+    "JOSE":      {"password": "123",      "rol": "VISUALIZADOR"},
     "FRANCISCO": {"password": "1234",     "rol": "SUPERVISOR"},
-    "JAROLD":    {"password": "12345",    "rol": "SUPERVISOR"},
+    "JAROLD":    {"password": "12345",    "rol": "VISUALIZADOR"},
     "JEAN":      {"password": "123456",   "rol": "SUPERVISOR"},
     "OSCAR":     {"password": "44660096", "rol": "ADMIN"},
 }
@@ -515,6 +515,8 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
 
 @app.route("/asistencia")
 def asistencia():
+    if session.get("rol") == "VISUALIZADOR":
+        return redirect("/dashboard")
     return """
 <!DOCTYPE html>
 <html>
