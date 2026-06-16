@@ -428,7 +428,7 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
 <div class="topbar">
   <div class="topbar-brand">
     <div class="topbar-logo">CP</div>
-    <div class="topbar-title">CONTROL DE PERSONAL — ALMACÉN</div>
+    <div class="topbar-title">CONTROL DE PERSONAL — ALMACÉN | Global Sourcing S.A.C.</div>
   </div>
   <div class="topbar-date">📅 {fecha_larga}</div>
 </div>
