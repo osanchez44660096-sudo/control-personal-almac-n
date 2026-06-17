@@ -2459,7 +2459,8 @@ def reporte_diario():
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:13px;font-weight:600;">{t.nombre}</td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;">{t.area}</td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;">{t.supervisor}</td>
-            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;color:{color};font-weight:800;">{estado}<br><span style="font-size:11px;font-weight:400;color:#64748b;">{hora if estado == "P" else ""}</span></td>
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;color:{color};font-weight:800;">{estado}</td>
+            <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;color:#64748b;">{hora if estado == "P" else "—"}</td>
             <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;text-align:center;color:#64748b;">{escaneado}</td>
         </tr>
         """
@@ -2529,6 +2530,7 @@ thead th:nth-child(2) {{ text-align:left; }}
       <th>Área</th>
       <th>Supervisor</th>
       <th>Asist.</th>
+      <th>Hora Ingreso</th>
       <th>Escaneado por</th>
     </tr>
   </thead>
