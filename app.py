@@ -813,65 +813,84 @@ def trabajadores():
         Trabajador.codigo
     ).all()
 
-    html = """
-<h1>TRABAJADORES</h1>
-
-<a href="/nuevo_trabajador">
-NUEVO TRABAJADOR
-</a>
-
-<br><br>
-
-<table border="1" cellpadding="5">
-
-<tr>
-    <th>CODIGO</th>
-    <th>NOMBRE</th>
-    <th>AREA</th>
-    <th>CONDICION</th>
-    <th>ESTADO</th>
-    <th>EDITAR</th>
-    <th>MOVER</th>
-    <th>CESAR</th>
-</tr>
-"""
-
+    filas = ""
     for t in trabajadores:
-
-        html += f"""
+        color_estado = "#16a34a" if t.estado == "ACTIVO" else "#dc2626"
+        filas += f"""
         <tr>
-    <td>{t.codigo}</td>
-    <td>{t.nombre}</td>
-    <td>{t.area}</td>
-    <td>{t.condicion}</td>
-    <td>{t.estado}</td>
-
-    <td>
-        <a href="/editar/{t.id}">
-        EDITAR
-        </a>
-    </td>
-    <td>
-        <a href="/mover/{t.id}">
-        MOVER
-        </a>
-    </td>
-
-    <td>
-        <a href="/cesar/{t.id}">
-        CESAR
-        </a>
-    </td>
-</tr>
+            <td>{t.codigo}</td>
+            <td style="text-align:left;font-weight:600;">{t.nombre}</td>
+            <td>{t.area}</td>
+            <td>{t.condicion}</td>
+            <td style="color:{color_estado};font-weight:700;">{t.estado}</td>
+            <td><a href="/editar/{t.id}" class="link-edit">EDITAR</a></td>
+            <td><a href="/mover/{t.id}" class="link-move">MOVER</a></td>
+            <td><a href="/cesar/{t.id}" class="link-cesar">CESAR</a></td>
+        </tr>
         """
 
-    html += "</table>"
-    html += """
-    <br><br>
-    <a href="/exportar_trabajadores">📥 DESCARGAR EXCEL</a>
-    <br><br>
-    <a href="/dashboard">⬅️ VOLVER AL DASHBOARD</a>
-    """
+    html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trabajadores</title>
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:'Segoe UI',sans-serif; background:#f1f5f9; padding:16px; }}
+.header {{ background:linear-gradient(90deg,#1e3a5f,#1a56db); border-radius:12px; padding:16px 20px; margin-bottom:16px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }}
+.header h1 {{ font-size:16px; font-weight:700; letter-spacing:1px; }}
+.kpi {{ background:#fff; border-radius:10px; padding:12px 16px; text-align:center; border-top:3px solid #3b82f6; margin-bottom:16px; display:inline-block; min-width:140px; }}
+.kpi-value {{ font-size:24px; font-weight:800; color:#1e293b; }}
+.kpi-label {{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-top:4px; }}
+table {{ width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; }}
+thead {{ background:#1e293b; }}
+thead th {{ padding:10px; color:#fff; font-size:11px; text-transform:uppercase; letter-spacing:1px; text-align:center; }}
+td {{ padding:8px 10px; border:1px solid #e2e8f0; font-size:12px; text-align:center; }}
+td a {{ text-decoration:none; font-weight:700; font-size:11px; padding:5px 10px; border-radius:6px; color:#fff; }}
+.link-edit {{ background:#3b82f6; }}
+.link-move {{ background:#d97706; }}
+.link-cesar {{ background:#dc2626; }}
+.btns {{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }}
+.btn {{ padding:12px 20px; border-radius:8px; font-size:13px; font-weight:700; text-decoration:none; color:#fff; }}
+.btn-new {{ background:linear-gradient(90deg,#7c3aed,#a855f7); }}
+.btn-excel {{ background:linear-gradient(90deg,#16a34a,#22c55e); }}
+.btn-dash {{ background:linear-gradient(90deg,#1a56db,#3b82f6); }}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>👥 TRABAJADORES</h1>
+</div>
+
+<div class="kpi">
+  <div class="kpi-value">{len(trabajadores)}</div>
+  <div class="kpi-label">Total Trabajadores</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Código</th><th>Nombre</th><th>Área</th><th>Condición</th>
+      <th>Estado</th><th>Editar</th><th>Mover</th><th>Cesar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filas}
+  </tbody>
+</table>
+
+<div class="btns">
+  <a href="/nuevo_trabajador" class="btn btn-new">➕ NUEVO TRABAJADOR</a>
+  <a href="/exportar_trabajadores" class="btn btn-excel">📥 DESCARGAR EXCEL</a>
+  <a href="/dashboard" class="btn btn-dash">⬅ DASHBOARD</a>
+</div>
+
+</body>
+</html>
+"""
     return html
 
 # =========================
@@ -1432,39 +1451,73 @@ def reporte_movimientos():
         Movimiento.id.desc()
     ).all()
 
-    html = """
-    <h1>MOVIMIENTOS DE PERSONAL</h1>
-
-    <table border="1" cellpadding="5">
-
-    <tr>
-        <th>FECHA</th>
-        <th>CODIGO</th>
-        <th>NOMBRE</th>
-        <th>AREA ANTERIOR</th>
-        <th>AREA NUEVA</th>
-    </tr>
-    """
-
+    filas = ""
     for m in movimientos:
-
-        html += f"""
+        filas += f"""
         <tr>
             <td>{m.fecha}</td>
             <td>{m.codigo}</td>
-            <td>{m.nombre}</td>
+            <td style="text-align:left;font-weight:600;">{m.nombre}</td>
             <td>{m.area_anterior}</td>
-            <td>{m.area_nueva}</td>
+            <td style="font-weight:700;color:#1a56db;">{m.area_nueva}</td>
         </tr>
         """
 
-    html += "</table>"
-    html += """
-    <br><br>
-    <a href="/exportar_asistencia">📥 DESCARGAR EXCEL</a>
-    <br><br>
-    <a href="/dashboard">⬅️ VOLVER AL DASHBOARD</a>
-    """
+    html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movimientos de Personal</title>
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:'Segoe UI',sans-serif; background:#f1f5f9; padding:16px; }}
+.header {{ background:linear-gradient(90deg,#1e3a5f,#1a56db); border-radius:12px; padding:16px 20px; margin-bottom:16px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }}
+.header h1 {{ font-size:16px; font-weight:700; letter-spacing:1px; }}
+.kpi {{ background:#fff; border-radius:10px; padding:12px 16px; text-align:center; border-top:3px solid #3b82f6; margin-bottom:16px; display:inline-block; min-width:140px; }}
+.kpi-value {{ font-size:24px; font-weight:800; color:#1e293b; }}
+.kpi-label {{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-top:4px; }}
+table {{ width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; }}
+thead {{ background:#1e293b; }}
+thead th {{ padding:10px; color:#fff; font-size:11px; text-transform:uppercase; letter-spacing:1px; text-align:center; }}
+td {{ padding:8px 10px; border:1px solid #e2e8f0; font-size:12px; text-align:center; }}
+.btns {{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }}
+.btn {{ padding:12px 20px; border-radius:8px; font-size:13px; font-weight:700; text-decoration:none; color:#fff; }}
+.btn-excel {{ background:linear-gradient(90deg,#16a34a,#22c55e); }}
+.btn-dash {{ background:linear-gradient(90deg,#1a56db,#3b82f6); }}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔄 MOVIMIENTOS DE PERSONAL</h1>
+</div>
+
+<div class="kpi">
+  <div class="kpi-value">{len(movimientos)}</div>
+  <div class="kpi-label">Total Movimientos</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fecha</th><th>Código</th><th>Nombre</th><th>Área Anterior</th><th>Área Nueva</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filas}
+  </tbody>
+</table>
+
+<div class="btns">
+  <a href="/exportar_asistencia" class="btn btn-excel">📥 DESCARGAR EXCEL</a>
+  <a href="/dashboard" class="btn btn-dash">⬅ DASHBOARD</a>
+</div>
+
+</body>
+</html>
+"""
     return html
 
 @app.route("/asistencias_especiales")
