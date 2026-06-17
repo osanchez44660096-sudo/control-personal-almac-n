@@ -1178,20 +1178,39 @@ b {{ color:#fff; }}
 @app.route("/reporte_horas")
 def reporte_horas():
     return """
-    <h1>REPORTE HORAS EXTRAS</h1>
-
-    <form action="/filtrar_horas" method="post">
-        Fecha inicio:<br>
-        <input type="date" name="fecha_inicio">
-        <br><br>
-        Fecha fin:<br>
-        <input type="date" name="fecha_fin">
-        <br><br>
-        <button type="submit">VER REPORTE</button>
-    </form>
-
-    <br>
-    <a href="/dashboard">Volver</a>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Horas Extras</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',sans-serif; background:#0f172a; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+.card { background:#1e293b; border-radius:16px; padding:28px; width:100%; max-width:380px; border:1px solid rgba(255,255,255,0.08); }
+h2 { color:#fff; font-size:16px; font-weight:700; margin-bottom:6px; }
+.sub { color:#64748b; font-size:12px; margin-bottom:24px; }
+label { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin-bottom:6px; }
+input[type=date] { width:100%; padding:12px 14px; background:#0f172a; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:15px; margin-bottom:16px; outline:none; }
+button { width:100%; padding:14px; border:none; border-radius:8px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; background:linear-gradient(90deg,#1a56db,#3b82f6); }
+a { display:block; text-align:center; color:#64748b; font-size:12px; margin-top:14px; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>⏱ REPORTE HORAS EXTRAS</h2>
+  <p class="sub">Selecciona el rango de fechas</p>
+  <form action="/filtrar_horas" method="post">
+    <label>Fecha Inicio</label>
+    <input type="date" name="fecha_inicio">
+    <label>Fecha Fin</label>
+    <input type="date" name="fecha_fin">
+    <button type="submit">VER REPORTE</button>
+  </form>
+  <a href="/dashboard">← Volver</a>
+</div>
+</body>
+</html>
     """
 
 @app.route("/filtrar_horas", methods=["POST"])
@@ -1217,34 +1236,76 @@ def filtrar_horas():
 
     total = sum(r.horas for r in registros)
 
-    html = f"""
-    <h1>REPORTE HORAS EXTRAS</h1>
-    <p>Del <b>{fi.strftime("%d/%m/%Y")}</b> al <b>{ff.strftime("%d/%m/%Y")}</b></p>
-    <p>Total horas: <b>{total}</b></p>
-
-    <table border="1" cellpadding="5">
-    <tr>
-        <th>FECHA</th><th>CODIGO</th><th>NOMBRE</th><th>HORAS</th><th>SUPERVISOR</th>
-    </tr>
-    """
-
+    filas = ""
     for r in registros:
-        html += f"""
+        filas += f"""
         <tr>
-            <td>{r.fecha}</td><td>{r.codigo}</td><td>{r.nombre}</td>
-            <td>{r.horas}</td><td>{r.supervisor}</td>
+            <td>{r.fecha}</td><td>{r.codigo}</td>
+            <td style="text-align:left;font-weight:600;">{r.nombre}</td>
+            <td style="font-weight:700;color:#1a56db;">{r.horas}</td>
+            <td>{r.supervisor}</td>
         </tr>
         """
 
-    html += f"""
-    </table>
-    <br>
-    <a href="/exportar_horas_filtrado?fi={fecha_inicio}&ff={fecha_fin}">📥 EXPORTAR EXCEL</a>
-    &nbsp;&nbsp;
-    <a href="/reporte_horas">NUEVO FILTRO</a>
-    &nbsp;&nbsp;
-    <a href="/dashboard">DASHBOARD</a>
-    """
+    html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Horas Extras</title>
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:'Segoe UI',sans-serif; background:#f1f5f9; padding:16px; }}
+.header {{ background:linear-gradient(90deg,#1e3a5f,#1a56db); border-radius:12px; padding:16px 20px; margin-bottom:16px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }}
+.header h1 {{ font-size:16px; font-weight:700; letter-spacing:1px; }}
+.header .fecha {{ font-size:13px; background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:20px; }}
+.kpi {{ background:#fff; border-radius:10px; padding:12px 16px; text-align:center; border-top:3px solid #3b82f6; margin-bottom:16px; display:inline-block; min-width:140px; }}
+.kpi-value {{ font-size:24px; font-weight:800; color:#1e293b; }}
+.kpi-label {{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-top:4px; }}
+table {{ width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; }}
+thead {{ background:#1e293b; }}
+thead th {{ padding:10px; color:#fff; font-size:11px; text-transform:uppercase; letter-spacing:1px; text-align:center; }}
+td {{ padding:8px 10px; border:1px solid #e2e8f0; font-size:12px; text-align:center; }}
+.btns {{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }}
+.btn {{ padding:12px 20px; border-radius:8px; font-size:13px; font-weight:700; text-decoration:none; color:#fff; }}
+.btn-excel {{ background:linear-gradient(90deg,#16a34a,#22c55e); }}
+.btn-new {{ background:linear-gradient(90deg,#d97706,#f59e0b); }}
+.btn-dash {{ background:linear-gradient(90deg,#1a56db,#3b82f6); }}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⏱ REPORTE HORAS EXTRAS</h1>
+  <div class="fecha">{fi.strftime("%d/%m/%Y")} al {ff.strftime("%d/%m/%Y")}</div>
+</div>
+
+<div class="kpi">
+  <div class="kpi-value">{total}</div>
+  <div class="kpi-label">Total Horas</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fecha</th><th>Código</th><th>Nombre</th><th>Horas</th><th>Supervisor</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filas}
+  </tbody>
+</table>
+
+<div class="btns">
+  <a href="/exportar_horas_filtrado?fi={fecha_inicio}&ff={fecha_fin}" class="btn btn-excel">📥 EXPORTAR EXCEL</a>
+  <a href="/reporte_horas" class="btn btn-new">🔄 NUEVO FILTRO</a>
+  <a href="/dashboard" class="btn btn-dash">⬅ DASHBOARD</a>
+</div>
+
+</body>
+</html>
+"""
 
     return html
 
@@ -1621,20 +1682,39 @@ b {{ color:#fff; }}
 @app.route("/reporte_asistencias_especiales")
 def reporte_asistencias_especiales():
     return """
-    <h1>REPORTE ASISTENCIAS ESPECIALES</h1>
-
-    <form action="/filtrar_especiales" method="post">
-        Fecha inicio:<br>
-        <input type="date" name="fecha_inicio">
-        <br><br>
-        Fecha fin:<br>
-        <input type="date" name="fecha_fin">
-        <br><br>
-        <button type="submit">VER REPORTE</button>
-    </form>
-
-    <br>
-    <a href="/dashboard">Volver</a>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Asistencias Especiales</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',sans-serif; background:#0f172a; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+.card { background:#1e293b; border-radius:16px; padding:28px; width:100%; max-width:380px; border:1px solid rgba(255,255,255,0.08); }
+h2 { color:#fff; font-size:16px; font-weight:700; margin-bottom:6px; }
+.sub { color:#64748b; font-size:12px; margin-bottom:24px; }
+label { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin-bottom:6px; }
+input[type=date] { width:100%; padding:12px 14px; background:#0f172a; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:15px; margin-bottom:16px; outline:none; }
+button { width:100%; padding:14px; border:none; border-radius:8px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; background:linear-gradient(90deg,#1a56db,#3b82f6); }
+a { display:block; text-align:center; color:#64748b; font-size:12px; margin-top:14px; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>📌 REPORTE ASISTENCIAS ESPECIALES</h2>
+  <p class="sub">Selecciona el rango de fechas</p>
+  <form action="/filtrar_especiales" method="post">
+    <label>Fecha Inicio</label>
+    <input type="date" name="fecha_inicio">
+    <label>Fecha Fin</label>
+    <input type="date" name="fecha_fin">
+    <button type="submit">VER REPORTE</button>
+  </form>
+  <a href="/dashboard">← Volver</a>
+</div>
+</body>
+</html>
     """
 
 @app.route("/filtrar_especiales", methods=["POST"])
@@ -1658,37 +1738,79 @@ def filtrar_especiales():
         AsistenciaEspecial.fecha.in_(fechas)
     ).order_by(AsistenciaEspecial.fecha, AsistenciaEspecial.nombre).all()
 
-    html = f"""
-    <h1>REPORTE ASISTENCIAS ESPECIALES</h1>
-    <p>Del <b>{fi.strftime("%d/%m/%Y")}</b> al <b>{ff.strftime("%d/%m/%Y")}</b></p>
-    <p>Total registros: <b>{len(registros)}</b></p>
-
-    <table border="1" cellpadding="5">
-    <tr>
-        <th>FECHA</th><th>CODIGO</th><th>NOMBRE</th><th>TIPO</th><th>SUPERVISOR</th>
-    </tr>
-    """
-
+    filas = ""
     for r in registros:
-        html += f"""
+        filas += f"""
         <tr>
-            <td>{r.fecha}</td><td>{r.codigo}</td><td>{r.nombre}</td>
-            <td>{r.tipo}</td><td>{r.supervisor}</td>
+            <td>{r.fecha}</td><td>{r.codigo}</td>
+            <td style="text-align:left;font-weight:600;">{r.nombre}</td>
+            <td style="font-weight:700;">{r.tipo}</td>
+            <td>{r.supervisor}</td>
         </tr>
         """
 
-    html += f"""
-    </table>
-    <br>
-    <a href="/exportar_especiales_filtrado?fi={fecha_inicio}&ff={fecha_fin}">📥 EXPORTAR EXCEL</a>
-    &nbsp;&nbsp;
-    <a href="/reporte_asistencias_especiales">NUEVO FILTRO</a>
-    &nbsp;&nbsp;
-    <a href="/dashboard">DASHBOARD</a>
-    """
+    html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Asistencias Especiales</title>
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:'Segoe UI',sans-serif; background:#f1f5f9; padding:16px; }}
+.header {{ background:linear-gradient(90deg,#1e3a5f,#1a56db); border-radius:12px; padding:16px 20px; margin-bottom:16px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }}
+.header h1 {{ font-size:16px; font-weight:700; letter-spacing:1px; }}
+.header .fecha {{ font-size:13px; background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:20px; }}
+.kpi {{ background:#fff; border-radius:10px; padding:12px 16px; text-align:center; border-top:3px solid #3b82f6; margin-bottom:16px; display:inline-block; min-width:140px; }}
+.kpi-value {{ font-size:24px; font-weight:800; color:#1e293b; }}
+.kpi-label {{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-top:4px; }}
+table {{ width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; }}
+thead {{ background:#1e293b; }}
+thead th {{ padding:10px; color:#fff; font-size:11px; text-transform:uppercase; letter-spacing:1px; text-align:center; }}
+td {{ padding:8px 10px; border:1px solid #e2e8f0; font-size:12px; text-align:center; }}
+.btns {{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }}
+.btn {{ padding:12px 20px; border-radius:8px; font-size:13px; font-weight:700; text-decoration:none; color:#fff; }}
+.btn-excel {{ background:linear-gradient(90deg,#16a34a,#22c55e); }}
+.btn-new {{ background:linear-gradient(90deg,#d97706,#f59e0b); }}
+.btn-dash {{ background:linear-gradient(90deg,#1a56db,#3b82f6); }}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📌 REPORTE ASISTENCIAS ESPECIALES</h1>
+  <div class="fecha">{fi.strftime("%d/%m/%Y")} al {ff.strftime("%d/%m/%Y")}</div>
+</div>
+
+<div class="kpi">
+  <div class="kpi-value">{len(registros)}</div>
+  <div class="kpi-label">Total Registros</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fecha</th><th>Código</th><th>Nombre</th><th>Tipo</th><th>Supervisor</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filas}
+  </tbody>
+</table>
+
+<div class="btns">
+  <a href="/exportar_especiales_filtrado?fi={fecha_inicio}&ff={fecha_fin}" class="btn btn-excel">📥 EXPORTAR EXCEL</a>
+  <a href="/reporte_asistencias_especiales" class="btn btn-new">🔄 NUEVO FILTRO</a>
+  <a href="/dashboard" class="btn btn-dash">⬅ DASHBOARD</a>
+</div>
+
+</body>
+</html>
+"""
 
     return html
-
+    
 @app.route("/exportar_especiales_filtrado")
 def exportar_especiales_filtrado():
 
