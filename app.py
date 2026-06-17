@@ -282,29 +282,36 @@ button { width:100%; padding:15px; background:linear-gradient(90deg,#1a56db,#3b8
 <title>Control Personal</title>
 <style>
 * {{ margin:0; padding:0; box-sizing:border-box; }}
-body {{ font-family:'Segoe UI',sans-serif; background:#0f172a; color:#fff; padding:12px; }}
-.topbar {{ background:linear-gradient(90deg,#1e3a5f,#1a56db); border-radius:12px; padding:12px 16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }}
+body {{ font-family:'Segoe UI',sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1444 50%, #2d1b69 100%); color:#fff; padding:12px; min-height:100vh; }}
+.topbar {{ background: linear-gradient(90deg, #1e3a5f 0%, #4338ca 100%); border-radius:12px; padding:12px 16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }}
 .topbar-title {{ font-size:13px; font-weight:700; }}
 .topbar-date {{ font-size:11px; background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px; }}
-.section {{ font-size:10px; font-weight:700; letter-spacing:2px; color:#64748b; text-transform:uppercase; margin:10px 0 6px; }}
+.section {{ font-size:10px; font-weight:700; letter-spacing:2px; color:#94a3b8; text-transform:uppercase; margin:14px 0 6px; }}
 .kpi-grid {{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:4px; }}
-.kpi {{ background:#1e293b; border-radius:10px; padding:10px 12px; border-top:3px solid #3b82f6; }}
-.kpi.red {{ border-top-color:#ef4444; }}
-.kpi.orange {{ border-top-color:#f59e0b; }}
-.kpi.purple {{ border-top-color:#8b5cf6; }}
-.kpi.green {{ border-top-color:#10b981; }}
-.kpi.slate {{ border-top-color:#64748b; }}
-.kpi-label {{ font-size:9px; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin-bottom:4px; }}
-.kpi-value {{ font-size:24px; font-weight:800; color:#60a5fa; }}
+.kpi {{ background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border-radius:12px; padding:12px 14px; border:1px solid rgba(255,255,255,0.08); }}
+.kpi.blue {{ border-color:rgba(59,130,246,0.5); box-shadow:0 0 16px rgba(59,130,246,0.18); }}
+.kpi.red {{ border-color:rgba(239,68,68,0.5); box-shadow:0 0 16px rgba(239,68,68,0.18); }}
+.kpi.gold {{ border-color:rgba(245,158,11,0.5); box-shadow:0 0 16px rgba(245,158,11,0.18); }}
+.kpi.purple {{ border-color:rgba(168,85,247,0.5); box-shadow:0 0 16px rgba(168,85,247,0.18); }}
+.kpi.teal {{ border-color:rgba(20,184,166,0.5); box-shadow:0 0 16px rgba(20,184,166,0.18); }}
+.kpi.bronze {{ border-color:rgba(194,120,3,0.5); box-shadow:0 0 16px rgba(194,120,3,0.18); }}
+.kpi.slate {{ border-color:rgba(148,163,184,0.4); box-shadow:0 0 16px rgba(148,163,184,0.12); }}
+.kpi-top {{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }}
+.kpi-label {{ font-size:9px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; font-weight:700; }}
+.kpi-icon {{ font-size:15px; }}
+.kpi-value {{ font-size:26px; font-weight:800; }}
+.kpi.blue .kpi-value {{ color:#60a5fa; }}
 .kpi.red .kpi-value {{ color:#f87171; }}
-.kpi.orange .kpi-value {{ color:#fbbf24; }}
-.kpi.purple .kpi-value {{ color:#a78bfa; }}
-.kpi.green .kpi-value {{ color:#34d399; }}
-.kpi.slate .kpi-value {{ color:#94a3b8; }}
+.kpi.gold .kpi-value {{ color:#fbbf24; }}
+.kpi.purple .kpi-value {{ color:#c084fc; }}
+.kpi.teal .kpi-value {{ color:#2dd4bf; }}
+.kpi.bronze .kpi-value {{ color:#fb923c; }}
+.kpi.slate .kpi-value {{ color:#cbd5e1; }}
+.kpi-sub {{ font-size:9px; color:#64748b; margin-top:4px; }}
 .btn-grid {{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }}
-.btn {{ display:flex; align-items:center; gap:8px; background:#1e293b; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px; text-decoration:none; color:#e2e8f0; font-size:12px; font-weight:600; }}
+.btn {{ display:flex; align-items:center; gap:10px; background:linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:12px; text-decoration:none; color:#e2e8f0; font-size:12px; font-weight:600; }}
 .btn:active {{ background:#1a56db; }}
-.btn-icon {{ font-size:18px; }}
+.btn-icon {{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }}
 .badge {{ margin-left:auto; background:#ef4444; color:#fff; font-size:10px; padding:2px 6px; border-radius:99px; }}
 </style>
 </head>
@@ -318,48 +325,56 @@ body {{ font-family:'Segoe UI',sans-serif; background:#0f172a; color:#fff; paddi
 <div class="section">Indicadores del día</div>
 <div class="kpi-grid">
   <div class="kpi blue">
-    <div class="kpi-label">Asistencias</div>
+    <div class="kpi-top"><span class="kpi-label">Asistencias</span><span class="kpi-icon">✅</span></div>
     <div class="kpi-value">{asistencias_hoy}</div>
+    <div class="kpi-sub">{porcentaje}% de {activos} activos</div>
   </div>
   <div class="kpi red">
-    <div class="kpi-label">Faltantes</div>
+    <div class="kpi-top"><span class="kpi-label">Faltantes</span><span class="kpi-icon">❌</span></div>
     <div class="kpi-value">{faltantes}</div>
+    <div class="kpi-sub">Sin marcar hoy</div>
   </div>
-  <div class="kpi orange">
-    <div class="kpi-label">Horas extras</div>
+  <div class="kpi gold">
+    <div class="kpi-top"><span class="kpi-label">Horas extras</span><span class="kpi-icon">⏰</span></div>
     <div class="kpi-value">{horas_hoy}</div>
+    <div class="kpi-sub">Registradas hoy</div>
   </div>
   <div class="kpi purple">
-    <div class="kpi-label">Incidencias</div>
+    <div class="kpi-top"><span class="kpi-label">Incidencias</span><span class="kpi-icon">🏥</span></div>
     <div class="kpi-value">{incidencias_activas}</div>
+    <div class="kpi-sub">Activas</div>
   </div>
 </div>
 
 <div class="section">Trabajadores</div>
 <div class="kpi-grid">
-  <div class="kpi green">
-    <div class="kpi-label">Activos</div>
+  <div class="kpi teal">
+    <div class="kpi-top"><span class="kpi-label">Activos</span><span class="kpi-icon">👥</span></div>
     <div class="kpi-value">{activos}</div>
   </div>
-  <div class="kpi red">
-    <div class="kpi-label">Cesados</div>
+  <div class="kpi bronze">
+    <div class="kpi-top"><span class="kpi-label">Cesados</span><span class="kpi-icon">🚪</span></div>
     <div class="kpi-value">{cesados}</div>
+  </div>
+  <div class="kpi slate">
+    <div class="kpi-top"><span class="kpi-label">Total registrados</span><span class="kpi-icon">📋</span></div>
+    <div class="kpi-value">{total}</div>
   </div>
 </div>
 
 <div class="section">Módulos</div>
 <div class="btn-grid">
-  <a href="/asistencia" class="btn"><span class="btn-icon">✅</span>Asistencia QR</a>
-  <a href="/reporte_diario" class="btn"><span class="btn-icon">📅</span>Reporte Diario</a>
-  <a href="/horas_extras" class="btn"><span class="btn-icon">⏰</span>Horas Extras</a>
-  <a href="/reporte_horas" class="btn"><span class="btn-icon">📊</span>Rep. Horas</a>
-  <a href="/asistencias_especiales" class="btn"><span class="btn-icon">⭐</span>Especiales</a>
-  <a href="/reporte_asistencias_especiales" class="btn"><span class="btn-icon">📑</span>Rep. Especiales</a>
-  <a href="/incidencias" class="btn"><span class="btn-icon">🏥</span>Incidencias{"<span class='badge'>" + str(incidencias_activas) + "</span>" if incidencias_activas > 0 else ""}</a>
-  <a href="/reporte_incidencias" class="btn"><span class="btn-icon">📋</span>Rep. Incidencias</a>
-  <a href="/trabajadores" class="btn"><span class="btn-icon">👥</span>Trabajadores</a>
-  <a href="/reporte_movimientos" class="btn"><span class="btn-icon">🔄</span>Movimientos</a>
-  <a href="/exportar_mensual_formato" class="btn"><div class="btn-icon">📊</div>Control Mensual Excel</a>
+  <a href="/asistencia" class="btn"><span class="btn-icon" style="background:#0d9488;">✅</span>Asistencia QR</a>
+  <a href="/reporte_diario" class="btn"><span class="btn-icon" style="background:#2563eb;">📅</span>Reporte Diario</a>
+  <a href="/horas_extras" class="btn"><span class="btn-icon" style="background:#dc2626;">⏰</span>Horas Extras</a>
+  <a href="/reporte_horas" class="btn"><span class="btn-icon" style="background:#7c3aed;">📊</span>Rep. Horas</a>
+  <a href="/asistencias_especiales" class="btn"><span class="btn-icon" style="background:#d97706;">⭐</span>Especiales</a>
+  <a href="/reporte_asistencias_especiales" class="btn"><span class="btn-icon" style="background:#db2777;">📑</span>Rep. Especiales</a>
+  <a href="/incidencias" class="btn"><span class="btn-icon" style="background:#9333ea;">🏥</span>Incidencias{"<span class='badge'>" + str(incidencias_activas) + "</span>" if incidencias_activas > 0 else ""}</a>
+  <a href="/reporte_incidencias" class="btn"><span class="btn-icon" style="background:#475569;">📋</span>Rep. Incidencias</a>
+  <a href="/trabajadores" class="btn"><span class="btn-icon" style="background:#7c3aed;">👥</span>Trabajadores</a>
+  <a href="/reporte_movimientos" class="btn"><span class="btn-icon" style="background:#2563eb;">🔄</span>Movimientos</a>
+  <a href="/exportar_mensual_formato" class="btn"><span class="btn-icon" style="background:#16a34a;">📊</span>Control Mensual Excel</a>
 </div>
 
 </body>
@@ -376,9 +391,9 @@ body {{ font-family:'Segoe UI',sans-serif; background:#0f172a; color:#fff; paddi
 <title>Control de Personal</title>
 <style>
 * {{ margin:0; padding:0; box-sizing:border-box; }}
-html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; background:#0f172a; color:#fff; }}
+html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1444 50%, #2d1b69 100%); color:#fff; }}
 .topbar {{
-    background: linear-gradient(90deg, #1e3a5f 0%, #1a56db 100%);
+    background: linear-gradient(90deg, #1e3a5f 0%, #4338ca 100%);
     padding: 0 24px; height: 52px;
     display: flex; align-items: center; justify-content: space-between;
 }}
@@ -391,35 +406,34 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
 .kpi-row {{ display:grid; gap:10px; }}
 .kpi-row.cols-4 {{ grid-template-columns: repeat(4, 1fr); }}
 .kpi-row.cols-3 {{ grid-template-columns: repeat(3, 1fr); }}
-.kpi {{ background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius:12px; padding:12px 16px; border:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; }}
-.kpi::before {{ content:''; position:absolute; top:0; left:0; right:0; height:3px; }}
-.kpi.blue::before {{ background: linear-gradient(90deg,#3b82f6,#60a5fa); }}
-.kpi.red::before {{ background: linear-gradient(90deg,#ef4444,#f87171); }}
-.kpi.orange::before {{ background: linear-gradient(90deg,#f59e0b,#fbbf24); }}
-.kpi.purple::before {{ background: linear-gradient(90deg,#8b5cf6,#a78bfa); }}
-.kpi.green::before {{ background: linear-gradient(90deg,#10b981,#34d399); }}
-.kpi.teal::before {{ background: linear-gradient(90deg,#06b6d4,#22d3ee); }}
-.kpi.slate::before {{ background: linear-gradient(90deg,#64748b,#94a3b8); }}
+.kpi {{ background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border-radius:14px; padding:14px 18px; border:1px solid rgba(255,255,255,0.08); position:relative; }}
+.kpi.blue {{ border-color:rgba(59,130,246,0.5); box-shadow:0 0 22px rgba(59,130,246,0.18); }}
+.kpi.red {{ border-color:rgba(239,68,68,0.5); box-shadow:0 0 22px rgba(239,68,68,0.18); }}
+.kpi.gold {{ border-color:rgba(245,158,11,0.5); box-shadow:0 0 22px rgba(245,158,11,0.18); }}
+.kpi.purple {{ border-color:rgba(168,85,247,0.5); box-shadow:0 0 22px rgba(168,85,247,0.18); }}
+.kpi.teal {{ border-color:rgba(20,184,166,0.5); box-shadow:0 0 22px rgba(20,184,166,0.18); }}
+.kpi.bronze {{ border-color:rgba(194,120,3,0.5); box-shadow:0 0 22px rgba(194,120,3,0.18); }}
+.kpi.slate {{ border-color:rgba(148,163,184,0.4); box-shadow:0 0 22px rgba(148,163,184,0.12); }}
 .kpi-top {{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }}
-.kpi-label {{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#64748b; font-weight:600; }}
-.kpi-icon {{ font-size:16px; }}
-.kpi-value {{ font-size:28px; font-weight:800; line-height:1; }}
+.kpi-label {{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; font-weight:700; }}
+.kpi-icon {{ font-size:17px; }}
+.kpi-value {{ font-size:30px; font-weight:800; line-height:1; }}
 .kpi.blue .kpi-value {{ color:#60a5fa; }}
 .kpi.red .kpi-value {{ color:#f87171; }}
-.kpi.orange .kpi-value {{ color:#fbbf24; }}
-.kpi.purple .kpi-value {{ color:#a78bfa; }}
-.kpi.green .kpi-value {{ color:#34d399; }}
-.kpi.teal .kpi-value {{ color:#22d3ee; }}
-.kpi.slate .kpi-value {{ color:#94a3b8; }}
+.kpi.gold .kpi-value {{ color:#fbbf24; }}
+.kpi.purple .kpi-value {{ color:#c084fc; }}
+.kpi.teal .kpi-value {{ color:#2dd4bf; }}
+.kpi.bronze .kpi-value {{ color:#fb923c; }}
+.kpi.slate .kpi-value {{ color:#cbd5e1; }}
 .progress {{ background:rgba(255,255,255,0.08); border-radius:99px; height:4px; margin-top:8px; }}
 .progress-fill {{ height:4px; border-radius:99px; background:linear-gradient(90deg,#3b82f6,#60a5fa); width:{porcentaje}%; }}
-.kpi-sub {{ font-size:10px; color:#475569; margin-top:4px; }}
+.kpi-sub {{ font-size:10px; color:#64748b; margin-top:4px; }}
 .menu-row {{ display:grid; gap:8px; }}
 .menu-row.cols-4 {{ grid-template-columns: repeat(4, 1fr); }}
 .menu-row.cols-3 {{ grid-template-columns: repeat(3, 1fr); }}
-.btn {{ display:flex; align-items:center; gap:8px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 14px; text-decoration:none; color:#e2e8f0; font-size:12px; font-weight:600; transition:all 0.15s; }}
-.btn:hover {{ background: linear-gradient(135deg, #1a56db 0%, #1e3a5f 100%); border-color:#3b82f6; color:#fff; transform:translateY(-1px); }}
-.btn-icon {{ width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; background:rgba(255,255,255,0.08); }}
+.btn {{ display:flex; align-items:center; gap:10px; background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:11px 14px; text-decoration:none; color:#e2e8f0; font-size:12px; font-weight:600; transition:all 0.15s; }}
+.btn:hover {{ border-color:#3b82f6; color:#fff; transform:translateY(-1px); box-shadow:0 0 16px rgba(59,130,246,0.2); }}
+.btn-icon {{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }}
 .badge {{ margin-left:auto; background:#ef4444; color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:99px; }}
 </style>
 </head>
@@ -449,7 +463,7 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
         <div class="kpi-value">{faltantes}</div>
         <div class="kpi-sub">Sin marcar hoy</div>
       </div>
-      <div class="kpi orange">
+      <div class="kpi gold">
         <div class="kpi-top"><span class="kpi-label">Horas extras</span><span class="kpi-icon">⏰</span></div>
         <div class="kpi-value">{horas_hoy}</div>
         <div class="kpi-sub">Registradas hoy</div>
@@ -465,11 +479,11 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
   <div>
     <div class="section-label">Trabajadores</div>
     <div class="kpi-row cols-3">
-      <div class="kpi green">
+      <div class="kpi teal">
         <div class="kpi-top"><span class="kpi-label">Activos</span><span class="kpi-icon">👥</span></div>
         <div class="kpi-value">{activos}</div>
       </div>
-      <div class="kpi red">
+      <div class="kpi bronze">
         <div class="kpi-top"><span class="kpi-label">Cesados</span><span class="kpi-icon">🚪</span></div>
         <div class="kpi-value">{cesados}</div>
       </div>
@@ -484,21 +498,21 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
     <div class="section-label">Módulos</div>
     <div style="display:flex; flex-direction:column; gap:8px;">
       <div class="menu-row cols-4">
-        <a href="/asistencia" class="btn"><div class="btn-icon">✅</div>Asistencia QR</a>
-        <a href="/reporte_diario" class="btn"><div class="btn-icon">📅</div>Reporte Diario</a>
-        <a href="/horas_extras" class="btn"><div class="btn-icon">⏰</div>Horas Extras</a>
-        <a href="/reporte_horas" class="btn"><div class="btn-icon">📊</div>Reporte Horas Extras</a>
+        <a href="/asistencia" class="btn"><div class="btn-icon" style="background:#0d9488;">✅</div>Asistencia QR</a>
+        <a href="/reporte_diario" class="btn"><div class="btn-icon" style="background:#2563eb;">📅</div>Reporte Diario</a>
+        <a href="/horas_extras" class="btn"><div class="btn-icon" style="background:#dc2626;">⏰</div>Horas Extras</a>
+        <a href="/reporte_horas" class="btn"><div class="btn-icon" style="background:#7c3aed;">📊</div>Reporte Horas Extras</a>
       </div>
       <div class="menu-row cols-4">
-        <a href="/asistencias_especiales" class="btn"><div class="btn-icon">⭐</div>Asistencias Especiales</a>
-        <a href="/reporte_asistencias_especiales" class="btn"><div class="btn-icon">📑</div>Reporte Especiales</a>
-        <a href="/incidencias" class="btn"><div class="btn-icon">🏥</div>Incidencias{"<span class='badge'>" + str(incidencias_activas) + "</span>" if incidencias_activas > 0 else ""}</a>
-        <a href="/reporte_incidencias" class="btn"><div class="btn-icon">📋</div>Reporte Incidencias</a>
+        <a href="/asistencias_especiales" class="btn"><div class="btn-icon" style="background:#d97706;">⭐</div>Asistencias Especiales</a>
+        <a href="/reporte_asistencias_especiales" class="btn"><div class="btn-icon" style="background:#db2777;">📑</div>Reporte Especiales</a>
+        <a href="/incidencias" class="btn"><div class="btn-icon" style="background:#9333ea;">🏥</div>Incidencias{"<span class='badge'>" + str(incidencias_activas) + "</span>" if incidencias_activas > 0 else ""}</a>
+        <a href="/reporte_incidencias" class="btn"><div class="btn-icon" style="background:#475569;">📋</div>Reporte Incidencias</a>
       </div>
       <div class="menu-row cols-3">
-        <a href="/trabajadores" class="btn"><div class="btn-icon">👥</div>Trabajadores</a>
-        <a href="/reporte_movimientos" class="btn"><div class="btn-icon">🔄</div>Movimientos Personal</a>
-        <a href="/exportar_mensual_formato" class="btn"><div class="btn-icon">📊</div>Control Mensual Excel</a>
+        <a href="/trabajadores" class="btn"><div class="btn-icon" style="background:#7c3aed;">👥</div>Trabajadores</a>
+        <a href="/reporte_movimientos" class="btn"><div class="btn-icon" style="background:#2563eb;">🔄</div>Movimientos Personal</a>
+        <a href="/exportar_mensual_formato" class="btn"><div class="btn-icon" style="background:#16a34a;">📊</div>Control Mensual Excel</a>
       </div>
     </div>
   </div>
