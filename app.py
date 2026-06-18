@@ -3512,6 +3512,250 @@ def generar_mensual_formato():
         cell_t3.fill = PatternFill("solid", fgColor="FFCCCC")
 
     ws3.freeze_panes = "E4"
+
+    python    # =========================
+    # PESTAÑA 4 - HORAS EXTRAS
+    # =========================
+    horas_registros = {}
+    for r in HorasExtras.query.filter(HorasExtras.fecha.in_(fechas)).all():
+        horas_registros[(r.codigo, r.fecha)] = r.horas
+
+    trabajadores_he = []
+    for t in trabajadores:
+        for fecha in fechas:
+            if (t.codigo, fecha) in horas_registros:
+                trabajadores_he.append(t)
+                break
+
+    ws4 = wb.create_sheet(title=f"Horas Extras {mes_nombre} {año}")
+
+    total_cols4 = 4 + dias_mes + 1
+    ws4.merge_cells(f"A1:{get_column_letter(total_cols4)}1")
+    ws4["A1"] = f"REPORTE DE HORAS EXTRAS — {mes_nombre} {año}"
+    ws4["A1"].fill = PatternFill("solid", fgColor="7030A0")
+    ws4["A1"].font = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
+    ws4["A1"].alignment = centro
+
+    ws4.merge_cells(f"A2:{get_column_letter(total_cols4)}2")
+    ws4["A2"] = "Se muestran las horas extra registradas por día. Total = suma de horas en el período."
+    ws4["A2"].font = Font(name="Calibri", size=8, italic=True)
+    ws4["A2"].alignment = centro
+
+    for col, h in enumerate(["Nro", "Apellidos y Nombres", "Condición", "Área"], 1):
+        cell = ws4.cell(row=3, column=col, value=h)
+        cell.fill = COLOR_HDR2
+        cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+        cell.alignment = centro if col != 2 else izq
+        cell.border = borde
+
+    for d in range(1, dias_mes + 1):
+        col = 4 + d
+        fecha_obj = fi + timedelta(days=d-1)
+        label = f"{fecha_obj.day}-{fecha_obj.strftime('%b').upper()}"
+        es_fds_hdr = fecha_obj.weekday() >= 5 or (fi + timedelta(days=d-1)).strftime("%d/%m/%Y") in FERIADOS
+        cell = ws4.cell(row=3, column=col, value=label)
+        cell.fill = PatternFill("solid", fgColor="4A4A4A") if es_fds_hdr else COLOR_HDR2
+        cell.font = Font(name="Calibri", size=8, bold=True, color="CCCCCC" if es_fds_hdr else "FFFFFF")
+        cell.alignment = centro
+        cell.border = borde
+
+    col_total4 = 4 + dias_mes + 1
+    cell_tot4 = ws4.cell(row=3, column=col_total4, value="TOTAL HRS")
+    cell_tot4.fill = PatternFill("solid", fgColor="1F3864")
+    cell_tot4.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+    cell_tot4.alignment = centro
+    cell_tot4.border = borde
+
+    ws4.column_dimensions["A"].width = 5
+    ws4.column_dimensions["B"].width = 32
+    ws4.column_dimensions["C"].width = 11
+    ws4.column_dimensions["D"].width = 12
+    for d in range(1, dias_mes + 1):
+        ws4.column_dimensions[get_column_letter(4 + d)].width = 7
+    ws4.column_dimensions[get_column_letter(col_total4)].width = 9
+
+    COLOR_HE = PatternFill("solid", fgColor="9933FF")
+
+    for i, t in enumerate(trabajadores_he, 1):
+        row = 3 + i
+        ws4.row_dimensions[row].height = 14
+        ws4.cell(row=row, column=1, value=i).alignment = centro
+        ws4.cell(row=row, column=1).border = borde
+        ws4.cell(row=row, column=1).font = Font(name="Calibri", size=9)
+        ws4.cell(row=row, column=2, value=t.nombre).alignment = izq
+        ws4.cell(row=row, column=2).border = borde
+        ws4.cell(row=row, column=2).font = Font(name="Calibri", size=9)
+        ws4.cell(row=row, column=3, value=t.condicion).alignment = centro
+        ws4.cell(row=row, column=3).border = borde
+        ws4.cell(row=row, column=3).font = Font(name="Calibri", size=9)
+        ws4.cell(row=row, column=4, value=t.area).alignment = centro
+        ws4.cell(row=row, column=4).border = borde
+        ws4.cell(row=row, column=4).font = Font(name="Calibri", size=9)
+
+        total_he = 0
+        for d, fecha in enumerate(fechas, 1):
+            col = 4 + d
+            cell = ws4.cell(row=row, column=col)
+            cell.alignment = centro
+            cell.border = borde
+            fecha_obj_d = fi + timedelta(days=d-1)
+            es_fds = fecha_obj_d.weekday() >= 5 or fecha in FERIADOS
+            if es_fds:
+                cell.value = ""
+                cell.fill = PatternFill("solid", fgColor="D9D9D9")
+                cell.font = Font(name="Calibri", size=9)
+            else:
+                horas = horas_registros.get((t.codigo, fecha), None)
+                if horas:
+                    cell.value = horas
+                    cell.fill = COLOR_HE
+                    cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+                    total_he += horas
+                else:
+                    cell.value = ""
+                    cell.fill = PatternFill("solid", fgColor="F2F2F2")
+                    cell.font = Font(name="Calibri", size=9)
+
+        cell_t4 = ws4.cell(row=row, column=col_total4, value=total_he)
+        cell_t4.alignment = centro
+        cell_t4.border = borde
+        cell_t4.font = Font(name="Calibri", size=9, bold=True)
+        cell_t4.fill = PatternFill("solid", fgColor="E6CCFF")
+
+    ws4.freeze_panes = "E4"
+
+    # ============================
+    # PESTAÑA 5 - RESUMEN GENERAL
+    # ============================
+    dias_laborables = [f for f in fechas if f not in FERIADOS]
+    # quitar sabados/domingos de dias_laborables tambien
+    dias_laborables_real = []
+    for d in range(dias_mes):
+        fecha_obj_d = fi + timedelta(days=d)
+        fecha_str = fecha_obj_d.strftime("%d/%m/%Y")
+        if fecha_obj_d.weekday() < 5 and fecha_str not in FERIADOS:
+            dias_laborables_real.append(fecha_str)
+    total_laborables = len(dias_laborables_real)
+
+    sabados_count = sum(1 for d in range(dias_mes) if (fi + timedelta(days=d)).weekday() == 5)
+    domingos_count = sum(1 for d in range(dias_mes) if (fi + timedelta(days=d)).weekday() == 6)
+
+    resumen_data = []
+    for t in trabajadores:
+        inc = None
+        for incd in incidencias_list:
+            if incd.codigo == t.codigo and incd.activo:
+                inc = incd
+                break
+
+        dias_trab = 0
+        faltas_t = 0
+        tardanzas_t = 0
+        for fecha, fecha_iso in zip(dias_laborables_real, [f for f in fechas_iso if f"{f[8:10]}/{f[5:7]}/{f[0:4]}" in dias_laborables_real]):
+            pass
+
+        # Recalcular de forma simple usando fechas y fechas_iso completos
+        for fecha, fecha_iso in zip(fechas, fechas_iso):
+            fecha_obj_d = datetime.strptime(fecha, "%d/%m/%Y")
+            if fecha_obj_d.weekday() >= 5 or fecha in FERIADOS:
+                continue
+            es_incidencia = inc and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin
+            if (t.codigo, fecha) in asistencias:
+                dias_trab += 1
+                hora = asist_registros.get((t.codigo, fecha), None)
+                if hora and hora > hora_limite_tard:
+                    tardanzas_t += 1
+            elif not es_incidencia:
+                faltas_t += 1
+
+        horas_t = sum(horas_registros.get((t.codigo, f), 0) for f in fechas)
+        porc_asist_ind = round((dias_trab / total_laborables * 100), 1) if total_laborables > 0 else 0
+
+        # Puntaje de desempeño (entre 0 y 100 aprox):
+        # Base = % asistencia. Penaliza tardanzas y faltas.
+        score = porc_asist_ind - (tardanzas_t * 3) - (faltas_t * 2)
+        score = max(0, round(score, 1))
+
+        resumen_data.append({
+            "nombre": t.nombre, "condicion": t.condicion, "area": t.area,
+            "dias_trab": dias_trab, "faltas": faltas_t, "tardanzas": tardanzas_t,
+            "horas": horas_t, "porc_asist": porc_asist_ind, "score": score
+        })
+
+    # Ordenar de mejor a peor desempeño
+    resumen_data.sort(key=lambda x: x["score"], reverse=True)
+
+    ws5 = wb.create_sheet(title=f"Resumen {mes_nombre} {año}")
+
+    ws5.merge_cells("A1:L1")
+    ws5["A1"] = f"RESUMEN GENERAL — {mes_nombre} {año}  |  Ranking de desempeño"
+    ws5["A1"].fill = PatternFill("solid", fgColor="1F3864")
+    ws5["A1"].font = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
+    ws5["A1"].alignment = centro
+
+    ws5.merge_cells("A2:L2")
+    ws5["A2"] = f"Días laborables del período: {total_laborables}  |  Sábados: {sabados_count}  |  Domingos: {domingos_count}  |  Puntaje = %Asistencia − (Tardanzas×3) − (Faltas×2)"
+    ws5["A2"].font = Font(name="Calibri", size=8, italic=True)
+    ws5["A2"].alignment = centro
+
+    headers5 = ["Ranking", "Nombre", "Condición", "Área", "Días Trabajados", "Faltas", "Tardanzas",
+                "Horas Extra", "Sábados", "Domingos", "% Asistencia", "Puntaje"]
+    for col, h in enumerate(headers5, 1):
+        cell = ws5.cell(row=3, column=col, value=h)
+        cell.fill = COLOR_HDR2
+        cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+        cell.alignment = centro
+        cell.border = borde
+
+    anchos5 = [8, 32, 11, 12, 14, 8, 10, 11, 9, 9, 12, 9]
+    for idx, w in enumerate(anchos5, 1):
+        ws5.column_dimensions[get_column_letter(idx)].width = w
+
+    COLOR_TOP = PatternFill("solid", fgColor="C6EFCE")
+    COLOR_MED = PatternFill("solid", fgColor="FFEB9C")
+    COLOR_BAJO = PatternFill("solid", fgColor="FFC7CE")
+
+    total_faltas_gen = 0
+    total_tard_gen = 0
+    total_horas_gen = 0
+
+    for i, r in enumerate(resumen_data, 1):
+        row = 3 + i
+        ws5.row_dimensions[row].height = 14
+
+        if r["score"] >= 90:
+            fill_row = COLOR_TOP
+        elif r["score"] >= 70:
+            fill_row = COLOR_MED
+        else:
+            fill_row = COLOR_BAJO
+
+        valores = [i, r["nombre"], r["condicion"], r["area"], r["dias_trab"], r["faltas"],
+                   r["tardanzas"], r["horas"], sabados_count, domingos_count,
+                   f"{r['porc_asist']}%", r["score"]]
+
+        for col, val in enumerate(valores, 1):
+            cell = ws5.cell(row=row, column=col, value=val)
+            cell.alignment = izq if col == 2 else centro
+            cell.border = borde
+            cell.font = Font(name="Calibri", size=9, bold=(col == 12))
+            cell.fill = fill_row
+
+        total_faltas_gen += r["faltas"]
+        total_tard_gen += r["tardanzas"]
+        total_horas_gen += r["horas"]
+
+    # Fila de totales
+    row_total = 3 + len(resumen_data) + 1
+    ws5.cell(row=row_total, column=2, value="TOTALES").font = Font(name="Calibri", size=9, bold=True)
+    ws5.cell(row=row_total, column=6, value=total_faltas_gen).font = Font(name="Calibri", size=9, bold=True)
+    ws5.cell(row=row_total, column=7, value=total_tard_gen).font = Font(name="Calibri", size=9, bold=True)
+    ws5.cell(row=row_total, column=8, value=total_horas_gen).font = Font(name="Calibri", size=9, bold=True)
+    for col in [2, 6, 7, 8]:
+        ws5.cell(row=row_total, column=col).fill = PatternFill("solid", fgColor="D9D9D9")
+        ws5.cell(row=row_total, column=col).border = borde
+
+    ws5.freeze_panes = "A4"
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
