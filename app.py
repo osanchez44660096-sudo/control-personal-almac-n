@@ -467,49 +467,53 @@ body {{ font-family:'Segoe UI',sans-serif; background: linear-gradient(135deg, #
 <title>Control de Personal</title>
 <style>
 * {{ margin:0; padding:0; box-sizing:border-box; }}
-html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1444 50%, #2d1b69 100%); color:#fff; }}
-.topbar {{
-    background: linear-gradient(90deg, #1e3a5f 0%, #4338ca 100%);
-    padding: 0 24px; height: 52px;
-    display: flex; align-items: center; justify-content: space-between;
-}}
+html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; background: linear-gradient(135deg, #0a0e1a 0%, #12093a 40%, #1e0a4a 70%, #2d1060 100%); color:#fff; }}
+.topbar {{ background: linear-gradient(90deg, #0f1b3d 0%, #1a237e 50%, #4a148c 100%); padding:0 24px; height:48px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); }}
 .topbar-brand {{ display:flex; align-items:center; gap:10px; }}
-.topbar-logo {{ width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }}
-.topbar-title {{ font-size:15px; font-weight:700; letter-spacing:1px; }}
-.topbar-date {{ font-size:12px; background:rgba(255,255,255,0.15); padding:4px 12px; border-radius:20px; }}
-.body {{ padding:12px 20px; height:calc(100vh - 52px); display:flex; flex-direction:column; gap:10px; }}
-.section-label {{ font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#94a3b8; margin-bottom:6px; }}
-.kpi-row {{ display:grid; gap:10px; }}
-.kpi-row.cols-4 {{ grid-template-columns: repeat(4, 1fr); }}
-.kpi-row.cols-3 {{ grid-template-columns: repeat(3, 1fr); }}
-.kpi {{ background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border-radius:14px; padding:14px 18px; border:1px solid rgba(255,255,255,0.08); position:relative; }}
-.kpi.blue {{ border-color:rgba(59,130,246,0.5); box-shadow:0 0 22px rgba(59,130,246,0.18); }}
-.kpi.red {{ border-color:rgba(239,68,68,0.5); box-shadow:0 0 22px rgba(239,68,68,0.18); }}
-.kpi.gold {{ border-color:rgba(245,158,11,0.5); box-shadow:0 0 22px rgba(245,158,11,0.18); }}
-.kpi.purple {{ border-color:rgba(168,85,247,0.5); box-shadow:0 0 22px rgba(168,85,247,0.18); }}
-.kpi.teal {{ border-color:rgba(20,184,166,0.5); box-shadow:0 0 22px rgba(20,184,166,0.18); }}
-.kpi.bronze {{ border-color:rgba(194,120,3,0.5); box-shadow:0 0 22px rgba(194,120,3,0.18); }}
-.kpi.slate {{ border-color:rgba(148,163,184,0.4); box-shadow:0 0 22px rgba(148,163,184,0.12); }}
-.kpi-top {{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }}
-.kpi-label {{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; font-weight:700; }}
-.kpi-icon {{ font-size:17px; }}
-.kpi-value {{ font-size:30px; font-weight:800; line-height:1; }}
-.kpi.blue .kpi-value {{ color:#60a5fa; }}
-.kpi.red .kpi-value {{ color:#f87171; }}
-.kpi.gold .kpi-value {{ color:#fbbf24; }}
-.kpi.purple .kpi-value {{ color:#c084fc; }}
-.kpi.teal .kpi-value {{ color:#2dd4bf; }}
-.kpi.bronze .kpi-value {{ color:#fb923c; }}
-.kpi.slate .kpi-value {{ color:#cbd5e1; }}
-.progress {{ background:rgba(255,255,255,0.08); border-radius:99px; height:4px; margin-top:8px; }}
-.progress-fill {{ height:4px; border-radius:99px; background:linear-gradient(90deg,#3b82f6,#60a5fa); width:{porcentaje}%; }}
-.kpi-sub {{ font-size:10px; color:#64748b; margin-top:4px; }}
-.menu-row {{ display:grid; gap:8px; }}
-.menu-row.cols-4 {{ grid-template-columns: repeat(4, 1fr); }}
-.menu-row.cols-3 {{ grid-template-columns: repeat(3, 1fr); }}
-.btn {{ display:flex; align-items:center; gap:10px; background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:11px 14px; text-decoration:none; color:#e2e8f0; font-size:12px; font-weight:600; transition:all 0.15s; }}
-.btn:hover {{ border-color:#3b82f6; color:#fff; transform:translateY(-1px); box-shadow:0 0 16px rgba(59,130,246,0.2); }}
-.btn-icon {{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }}
+.topbar-logo {{ width:30px; height:30px; border-radius:7px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; }}
+.topbar-title {{ font-size:14px; font-weight:700; letter-spacing:1px; }}
+.topbar-date {{ font-size:12px; background:rgba(255,255,255,0.12); padding:4px 14px; border-radius:20px; border:1px solid rgba(255,255,255,0.15); }}
+.body {{ padding:10px 20px; height:calc(100vh - 48px); display:flex; flex-direction:column; gap:8px; overflow:hidden; }}
+.section-title {{ font-size:17px; font-weight:800; letter-spacing:1px; color:#fff; display:flex; align-items:center; gap:8px; text-shadow:0 0 20px rgba(255,255,255,0.3); }}
+.kpi-grid {{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }}
+.kc {{ border-radius:12px; padding:12px 14px; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; height:108px; border:1px solid; }}
+.kc-top {{ display:flex; align-items:center; justify-content:space-between; }}
+.kc-label {{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; opacity:0.9; }}
+.kc-icon {{ font-size:18px; }}
+.kc-value {{ font-size:30px; font-weight:900; line-height:1; margin:2px 0; }}
+.kc-sub {{ font-size:10px; opacity:0.7; }}
+.kc-bigicon {{ position:absolute; right:10px; bottom:6px; font-size:36px; opacity:0.2; }}
+.kc-green {{ background:linear-gradient(135deg,rgba(16,85,30,0.7),rgba(5,46,22,0.95)); border-color:rgba(34,197,94,0.6); box-shadow:0 0 20px rgba(34,197,94,0.25); color:#4ade80; }}
+.kc-green .kc-label,.kc-green .kc-sub {{ color:#86efac; }}
+.kc-red {{ background:linear-gradient(135deg,rgba(127,29,29,0.7),rgba(69,10,10,0.95)); border-color:rgba(239,68,68,0.6); box-shadow:0 0 20px rgba(239,68,68,0.25); color:#f87171; }}
+.kc-red .kc-label,.kc-red .kc-sub {{ color:#fca5a5; }}
+.kc-gold {{ background:linear-gradient(135deg,rgba(120,80,0,0.7),rgba(78,46,0,0.95)); border-color:rgba(245,158,11,0.6); box-shadow:0 0 20px rgba(245,158,11,0.25); color:#fbbf24; }}
+.kc-gold .kc-label,.kc-gold .kc-sub {{ color:#fde68a; }}
+.kc-teal {{ background:linear-gradient(135deg,rgba(6,78,59,0.7),rgba(2,44,34,0.95)); border-color:rgba(20,184,166,0.6); box-shadow:0 0 20px rgba(20,184,166,0.25); color:#2dd4bf; }}
+.kc-teal .kc-label,.kc-teal .kc-sub {{ color:#99f6e4; }}
+.kc-purple {{ background:linear-gradient(135deg,rgba(76,29,149,0.7),rgba(46,16,101,0.95)); border-color:rgba(168,85,247,0.6); box-shadow:0 0 20px rgba(168,85,247,0.25); color:#c084fc; }}
+.kc-purple .kc-label,.kc-purple .kc-sub {{ color:#d8b4fe; }}
+.kc-orange {{ background:linear-gradient(135deg,rgba(124,45,18,0.7),rgba(67,20,7,0.95)); border-color:rgba(249,115,22,0.6); box-shadow:0 0 20px rgba(249,115,22,0.25); color:#fb923c; }}
+.kc-orange .kc-label,.kc-orange .kc-sub {{ color:#fed7aa; }}
+.kc-blue {{ background:linear-gradient(135deg,rgba(29,78,216,0.5),rgba(17,24,95,0.95)); border-color:rgba(59,130,246,0.6); box-shadow:0 0 20px rgba(59,130,246,0.25); color:#60a5fa; }}
+.kc-blue .kc-label,.kc-blue .kc-sub {{ color:#bfdbfe; }}
+.kc-cyan {{ background:linear-gradient(135deg,rgba(14,116,144,0.5),rgba(8,51,68,0.95)); border-color:rgba(6,182,212,0.6); box-shadow:0 0 20px rgba(6,182,212,0.25); color:#22d3ee; }}
+.kc-cyan .kc-label,.kc-cyan .kc-sub {{ color:#a5f3fc; }}
+.kc-brown {{ background:linear-gradient(135deg,rgba(120,53,15,0.5),rgba(67,20,7,0.95)); border-color:rgba(217,119,6,0.6); box-shadow:0 0 20px rgba(217,119,6,0.25); color:#f59e0b; }}
+.kc-brown .kc-label,.kc-brown .kc-sub {{ color:#fde68a; }}
+.kc-darkred {{ background:linear-gradient(135deg,rgba(153,27,27,0.5),rgba(69,10,10,0.95)); border-color:rgba(220,38,38,0.6); box-shadow:0 0 20px rgba(220,38,38,0.25); color:#ef4444; }}
+.kc-darkred .kc-label,.kc-darkred .kc-sub {{ color:#fca5a5; }}
+.kc-violet {{ background:linear-gradient(135deg,rgba(109,40,217,0.5),rgba(55,14,120,0.95)); border-color:rgba(139,92,246,0.6); box-shadow:0 0 20px rgba(139,92,246,0.25); color:#a78bfa; }}
+.kc-violet .kc-label,.kc-violet .kc-sub {{ color:#ddd6fe; }}
+.kc-crimson {{ background:linear-gradient(135deg,rgba(136,19,55,0.5),rgba(76,5,25,0.95)); border-color:rgba(244,63,94,0.6); box-shadow:0 0 20px rgba(244,63,94,0.25); color:#fb7185; }}
+.kc-crimson .kc-label,.kc-crimson .kc-sub {{ color:#fecdd3; }}
+.section-label {{ font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#94a3b8; margin-bottom:4px; }}
+.menu-row {{ display:grid; gap:7px; }}
+.menu-row.cols-4 {{ grid-template-columns:repeat(4,1fr); }}
+.menu-row.cols-3 {{ grid-template-columns:repeat(3,1fr); }}
+.btn {{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 14px; text-decoration:none; color:#e2e8f0; font-size:12px; font-weight:600; transition:all 0.15s; }}
+.btn:hover {{ background:rgba(59,130,246,0.2); border-color:#3b82f6; color:#fff; transform:translateY(-1px); box-shadow:0 0 14px rgba(59,130,246,0.2); }}
+.btn-icon {{ width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }}
 .badge {{ margin-left:auto; background:#ef4444; color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:99px; }}
 </style>
 </head>
@@ -526,74 +530,92 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
 <div class="body">
 
   <div>
-    <div class="section-label">📊 Indicadores del Día</div>
-    <div class="kpi-row cols-3">
-      <div class="kpi green">
-        <div class="kpi-top"><span class="kpi-label">Asistentes</span><span class="kpi-icon">✅</span></div>
-        <div class="kpi-value">{asistencias_hoy}</div>
-        <div class="progress"><div class="progress-fill"></div></div>
+    <div class="section-title">📊 INDICADORES DEL DÍA</div>
+    <div class="kpi-grid" style="margin-top:8px;">
+      <div class="kc kc-green">
+        <div class="kc-top"><span class="kc-label">Personal Asistente</span><span class="kc-icon">✅</span></div>
+        <div class="kc-value">{asistencias_hoy}</div>
+        <div class="kc-sub">{asistencias_hoy} asistencias confirmadas</div>
+        <div class="kc-bigicon">✔</div>
       </div>
-      <div class="kpi red">
-        <div class="kpi-top"><span class="kpi-label">Ausentes</span><span class="kpi-icon">❌</span></div>
-        <div class="kpi-value">{faltantes}</div>
+      <div class="kc kc-red">
+        <div class="kc-top"><span class="kc-label">Personal Ausente</span><span class="kc-icon">❌</span></div>
+        <div class="kc-value">{faltantes}</div>
+        <div class="kc-sub">{faltantes} faltas del día</div>
+        <div class="kc-bigicon">✗</div>
       </div>
-      <div class="kpi gold">
-        <div class="kpi-top"><span class="kpi-label">Tardanzas</span><span class="kpi-icon">⏰</span></div>
-        <div class="kpi-value">{tardanzas_hoy}</div>
-        <div class="kpi-sub">Después de {hora_limite}</div>
+      <div class="kc kc-gold">
+        <div class="kc-top"><span class="kc-label">Personal Tardanza</span><span class="kc-icon">⏰</span></div>
+        <div class="kc-value">{tardanzas_hoy}</div>
+        <div class="kc-sub">Después de {hora_limite}</div>
+        <div class="kc-bigicon">🕐</div>
       </div>
-      <div class="kpi teal">
-        <div class="kpi-top"><span class="kpi-label">% Asistencia</span><span class="kpi-icon">📊</span></div>
-        <div class="kpi-value">{porc_asistencia}%</div>
+      <div class="kc kc-teal">
+        <div class="kc-top"><span class="kc-label">% Asistencia</span><span class="kc-icon">📈</span></div>
+        <div class="kc-value">{porc_asistencia}%</div>
+        <div class="kc-sub">% Asistencia Diaria</div>
+        <div class="kc-bigicon">📊</div>
       </div>
-      <div class="kpi bronze">
-        <div class="kpi-top"><span class="kpi-label">% Ausentismo</span><span class="kpi-icon">📉</span></div>
-        <div class="kpi-value">{porc_ausentismo}%</div>
+      <div class="kc kc-purple">
+        <div class="kc-top"><span class="kc-label">% Ausentismo</span><span class="kc-icon">📉</span></div>
+        <div class="kc-value">{porc_ausentismo}%</div>
+        <div class="kc-sub">% Ausentismo Diario</div>
+        <div class="kc-bigicon">📉</div>
       </div>
-      <div class="kpi purple">
-        <div class="kpi-top"><span class="kpi-label">Incidencias</span><span class="kpi-icon">🚨</span></div>
-        <div class="kpi-value">{incidencias_activas}</div>
-        <div class="kpi-sub">Activas</div>
-      </div>
-    </div>
-
-    <div class="section-label" style="margin-top:10px;">👥 Dotación de Personal</div>
-    <div class="kpi-row cols-3">
-      <div class="kpi blue">
-        <div class="kpi-top"><span class="kpi-label">Programado</span><span class="kpi-icon">👥</span></div>
-        <div class="kpi-value">{programado}</div>
-        <div class="kpi-sub">Dotación requerida</div>
-      </div>
-      <div class="kpi green">
-        <div class="kpi-top"><span class="kpi-label">Activos</span><span class="kpi-icon">👨‍💼</span></div>
-        <div class="kpi-value">{activos}</div>
-      </div>
-      <div class="kpi bronze">
-        <div class="kpi-top"><span class="kpi-label">Por Reponer</span><span class="kpi-icon">🔄</span></div>
-        <div class="kpi-value">{por_reponer}</div>
-        <div class="kpi-sub">Vacantes urgentes</div>
-      </div>
-      <div class="kpi red">
-        <div class="kpi-top"><span class="kpi-label">3 Faltas Consec.</span><span class="kpi-icon">⚠️</span></div>
-        <div class="kpi-value">{faltas_consecutivas_count}</div>
-        <div class="kpi-sub">Requiere seguimiento</div>
-      </div>
-      <div class="kpi teal">
-        <div class="kpi-top"><span class="kpi-label">% Cobertura</span><span class="kpi-icon">📋</span></div>
-        <div class="kpi-value">{porc_cobertura}%</div>
-        <div class="kpi-sub">{activos} de {programado}</div>
-      </div>
-      <div class="kpi purple">
-        <div class="kpi-top"><span class="kpi-label">Observados</span><span class="kpi-icon">🔴</span></div>
-        <div class="kpi-value">{personal_observado}</div>
-        <div class="kpi-sub">2+ faltas ó 3+ tardanzas</div>
+      <div class="kc kc-orange">
+        <div class="kc-top"><span class="kc-label">Incidencias del Día</span><span class="kc-icon">🚨</span></div>
+        <div class="kc-value">{incidencias_activas}</div>
+        <div class="kc-sub">Activas</div>
+        <div class="kc-bigicon">🔔</div>
       </div>
     </div>
   </div>
 
   <div>
-    <div class="section-label">Módulos</div>
-    <div style="display:flex; flex-direction:column; gap:8px;">
+    <div class="section-title">👥 DOTACIÓN DE PERSONAL</div>
+    <div class="kpi-grid" style="margin-top:8px;">
+      <div class="kc kc-blue">
+        <div class="kc-top"><span class="kc-label">Personal Programado</span><span class="kc-icon">👥</span></div>
+        <div class="kc-value">{programado}</div>
+        <div class="kc-sub">100% de la fuerza laboral</div>
+        <div class="kc-bigicon">👥</div>
+      </div>
+      <div class="kc kc-cyan">
+        <div class="kc-top"><span class="kc-label">Trabajadores Activos</span><span class="kc-icon">👨‍💼</span></div>
+        <div class="kc-value">{activos}</div>
+        <div class="kc-sub">{activos} activos confirmados</div>
+        <div class="kc-bigicon">🧑</div>
+      </div>
+      <div class="kc kc-brown">
+        <div class="kc-top"><span class="kc-label">Personal por Reponer</span><span class="kc-icon">🔄</span></div>
+        <div class="kc-value">{por_reponer}</div>
+        <div class="kc-sub">{por_reponer} vacantes urgentes</div>
+        <div class="kc-bigicon">🔄</div>
+      </div>
+      <div class="kc kc-darkred">
+        <div class="kc-top"><span class="kc-label">3 Faltas Consecutivas</span><span class="kc-icon">⚠️</span></div>
+        <div class="kc-value">{faltas_consecutivas_count}</div>
+        <div class="kc-sub">Requiere seguimiento</div>
+        <div class="kc-bigicon">⚠</div>
+      </div>
+      <div class="kc kc-violet">
+        <div class="kc-top"><span class="kc-label">% Cobertura de Personal</span><span class="kc-icon">📋</span></div>
+        <div class="kc-value">{porc_cobertura}%</div>
+        <div class="kc-sub">Meta: >95%</div>
+        <div class="kc-bigicon">📊</div>
+      </div>
+      <div class="kc kc-crimson">
+        <div class="kc-top"><span class="kc-label">Personal Observado</span><span class="kc-icon">🔴</span></div>
+        <div class="kc-value">{personal_observado}</div>
+        <div class="kc-sub">Personal Observado</div>
+        <div class="kc-bigicon">👁</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">MÓDULOS</div>
+    <div style="display:flex; flex-direction:column; gap:7px;">
       <div class="menu-row cols-4">
         <a href="/asistencia" class="btn"><div class="btn-icon" style="background:#0d9488;">✅</div>Asistencia QR</a>
         <a href="/reporte_diario" class="btn"><div class="btn-icon" style="background:#2563eb;">📅</div>Reporte Diario</a>
