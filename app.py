@@ -3513,7 +3513,7 @@ def generar_mensual_formato():
 
     ws3.freeze_panes = "E4"
 
-    python    # =========================
+    # =========================
     # PESTAÑA 4 - HORAS EXTRAS
     # =========================
     horas_registros = {}
