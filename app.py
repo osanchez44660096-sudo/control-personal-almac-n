@@ -3200,35 +3200,39 @@ def generar_mensual_formato():
             cell.font = Font(name="Calibri", size=9, color="000000")
 
             # Estado
-            if t.estado == "CESADO":
+            fecha_obj_d = fi + timedelta(days=d-1)
+            es_fds = fecha_obj_d.weekday() >= 5  # sábado o domingo
+
+            if es_fds:
+                cell.value = ""
+                cell.fill = PatternFill("solid", fgColor="D9D9D9")
+                cell.font = Font(name="Calibri", size=9)
+            elif t.estado == "CESADO":
                 estado = "C"
+                cell.value = estado
+                cell.fill = COLOR_C
             elif inc and inc.tipo == "V" and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
                 estado = "V"
-            elif inc and inc.tipo == "LSG" and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
-                estado = "LSG"
-            elif inc and inc.tipo == "DM" and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
-                estado = "DM"
-            elif (t.codigo, fecha) in asistencias:
-                estado = "P"
-            else:
-                estado = "F"
-
-            cell.value = estado
-
-            if estado == "P":
-                cell.fill = COLOR_P
-            elif estado == "F":
-                cell.fill = COLOR_F
-            elif estado == "DM":
-                cell.fill = COLOR_DM
-            elif estado == "C":
-                cell.fill = COLOR_C
-            elif estado == "LSG":
-                cell.fill = COLOR_LSG
-                cell.font = Font(name="Calibri", size=8, color="000000")
-            elif estado == "V":
+                cell.value = estado
                 cell.fill = COLOR_V
                 cell.font = Font(name="Calibri", size=9, color="FFFFFF")
+            elif inc and inc.tipo == "LSG" and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
+                estado = "LSG"
+                cell.value = estado
+                cell.fill = COLOR_LSG
+                cell.font = Font(name="Calibri", size=8, color="000000")
+            elif inc and inc.tipo == "DM" and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
+                estado = "DM"
+                cell.value = estado
+                cell.fill = COLOR_DM
+            elif (t.codigo, fecha) in asistencias:
+                estado = "P"
+                cell.value = estado
+                cell.fill = COLOR_P
+            else:
+                estado = "F"
+                cell.value = estado
+                cell.fill = COLOR_F
 
     # Congelar paneles en E4
     ws.freeze_panes = "E4"
@@ -3330,16 +3334,23 @@ def generar_mensual_formato():
             cell = ws2.cell(row=row, column=col)
             cell.alignment = centro
             cell.border = borde
-            hora = asist_registros.get((t.codigo, fecha), None)
-            if hora and hora > hora_limite_tard:
-                cell.value = hora[:5]  # HH:MM
-                cell.fill = COLOR_TARDE
-                cell.font = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
-                total_tard += 1
-            else:
+            fecha_obj_d = fi + timedelta(days=d-1)
+            es_fds = fecha_obj_d.weekday() >= 5
+            if es_fds:
                 cell.value = ""
-                cell.fill = PatternFill("solid", fgColor="F2F2F2")
+                cell.fill = PatternFill("solid", fgColor="D9D9D9")
                 cell.font = Font(name="Calibri", size=9)
+            else:
+                hora = asist_registros.get((t.codigo, fecha), None)
+                if hora and hora > hora_limite_tard:
+                    cell.value = hora[:5]
+                    cell.fill = COLOR_TARDE
+                    cell.font = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
+                    total_tard += 1
+                else:
+                    cell.value = ""
+                    cell.fill = PatternFill("solid", fgColor="F2F2F2")
+                    cell.font = Font(name="Calibri", size=9)
 
         # Total por trabajador
         cell_t = ws2.cell(row=row, column=col_total2, value=total_tard)
@@ -3397,13 +3408,16 @@ def generar_mensual_formato():
         cell.border = borde
 
     # Encabezados de fechas
+    COLOR_FDS = PatternFill("solid", fgColor="4A4A4A")  # Gris oscuro fines de semana
+
     for d in range(1, dias_mes + 1):
         col = 4 + d
         fecha_obj = fi + timedelta(days=d-1)
         label = f"{fecha_obj.day}-{fecha_obj.strftime('%b').upper()}"
-        cell = ws3.cell(row=3, column=col, value=label)
-        cell.fill = COLOR_HDR2
-        cell.font = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
+        es_fds = fecha_obj.weekday() >= 5  # sábado o domingo
+        cell = ws.cell(row=3, column=col, value=label)
+        cell.fill = COLOR_FDS if es_fds else COLOR_HDR2
+        cell.font = Font(name="Calibri", size=8, bold=True, color="CCCCCC" if es_fds else "FFFFFF")
         cell.alignment = centro
         cell.border = borde
 
@@ -3453,20 +3467,25 @@ def generar_mensual_formato():
             cell = ws3.cell(row=row, column=col)
             cell.alignment = centro
             cell.border = borde
-
-            es_incidencia = False
-            if inc and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
-                es_incidencia = True
-
-            if (t.codigo, fecha) not in asistencias and not es_incidencia:
-                cell.value = "F"
-                cell.fill = COLOR_F
-                cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
-                total_faltas += 1
-            else:
+            fecha_obj_d = fi + timedelta(days=d-1)
+            es_fds = fecha_obj_d.weekday() >= 5
+            if es_fds:
                 cell.value = ""
-                cell.fill = PatternFill("solid", fgColor="F2F2F2")
+                cell.fill = PatternFill("solid", fgColor="D9D9D9")
                 cell.font = Font(name="Calibri", size=9)
+            else:
+                es_incidencia = False
+                if inc and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
+                    es_incidencia = True
+                if (t.codigo, fecha) not in asistencias and not es_incidencia:
+                    cell.value = "F"
+                    cell.fill = COLOR_F
+                    cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+                    total_faltas += 1
+                else:
+                    cell.value = ""
+                    cell.fill = PatternFill("solid", fgColor="F2F2F2")
+                    cell.font = Font(name="Calibri", size=9)
 
         # Total por trabajador
         cell_t3 = ws3.cell(row=row, column=col_total3, value=total_faltas)
