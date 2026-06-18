@@ -3293,7 +3293,7 @@ def generar_mensual_formato():
         fecha_obj = fi + timedelta(days=d-1)
         label = f"{fecha_obj.day}-{fecha_obj.strftime('%b').upper()}"
         es_fds_hdr = fecha_obj.weekday() >= 5
-        cell = ws3.cell(row=3, column=col, value=label)
+        cell = ws2.cell(row=3, column=col, value=label)
         cell.fill = PatternFill("solid", fgColor="4A4A4A") if es_fds_hdr else COLOR_HDR2
         cell.font = Font(name="Calibri", size=8, bold=True, color="CCCCCC" if es_fds_hdr else "FFFFFF")
         cell.alignment = centro
