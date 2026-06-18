@@ -526,41 +526,47 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
 <div class="body">
 
   <div>
-    <div class="section-label">Indicadores del día</div>
-    <div class="kpi-row cols-4">
-      <div class="kpi blue">
-        <div class="kpi-top"><span class="kpi-label">Personal Programado</span><span class="kpi-icon">👥</span></div>
-        <div class="kpi-value">{programado}</div>
-        <div class="kpi-sub">Dotación requerida</div>
-      </div>
+    <div class="section-label">📊 Indicadores del Día</div>
+    <div class="kpi-row cols-3">
       <div class="kpi green">
-        <div class="kpi-top"><span class="kpi-label">Personal Asistente</span><span class="kpi-icon">✅</span></div>
+        <div class="kpi-top"><span class="kpi-label">Asistentes</span><span class="kpi-icon">✅</span></div>
         <div class="kpi-value">{asistencias_hoy}</div>
         <div class="progress"><div class="progress-fill"></div></div>
-        <div class="kpi-sub">{porc_asistencia}% asistencia</div>
       </div>
       <div class="kpi red">
-        <div class="kpi-top"><span class="kpi-label">Personal Ausente</span><span class="kpi-icon">❌</span></div>
+        <div class="kpi-top"><span class="kpi-label">Ausentes</span><span class="kpi-icon">❌</span></div>
         <div class="kpi-value">{faltantes}</div>
-        <div class="kpi-sub">{porc_ausentismo}% ausentismo</div>
       </div>
       <div class="kpi gold">
         <div class="kpi-top"><span class="kpi-label">Tardanzas</span><span class="kpi-icon">⏰</span></div>
         <div class="kpi-value">{tardanzas_hoy}</div>
         <div class="kpi-sub">Después de {hora_limite}</div>
       </div>
-    </div>
-
-    <div class="kpi-row cols-4" style="margin-top:10px;">
+      <div class="kpi teal">
+        <div class="kpi-top"><span class="kpi-label">% Asistencia</span><span class="kpi-icon">📊</span></div>
+        <div class="kpi-value">{porc_asistencia}%</div>
+      </div>
+      <div class="kpi bronze">
+        <div class="kpi-top"><span class="kpi-label">% Ausentismo</span><span class="kpi-icon">📉</span></div>
+        <div class="kpi-value">{porc_ausentismo}%</div>
+      </div>
       <div class="kpi purple">
-        <div class="kpi-top"><span class="kpi-label">Incidencias Activas</span><span class="kpi-icon">🏥</span></div>
+        <div class="kpi-top"><span class="kpi-label">Incidencias</span><span class="kpi-icon">🚨</span></div>
         <div class="kpi-value">{incidencias_activas}</div>
         <div class="kpi-sub">Activas</div>
       </div>
-      <div class="kpi teal">
-        <div class="kpi-top"><span class="kpi-label">% Cobertura</span><span class="kpi-icon">📊</span></div>
-        <div class="kpi-value">{porc_cobertura}%</div>
-        <div class="kpi-sub">{activos} de {programado} activos</div>
+    </div>
+
+    <div class="section-label" style="margin-top:10px;">👥 Dotación de Personal</div>
+    <div class="kpi-row cols-3">
+      <div class="kpi blue">
+        <div class="kpi-top"><span class="kpi-label">Programado</span><span class="kpi-icon">👥</span></div>
+        <div class="kpi-value">{programado}</div>
+        <div class="kpi-sub">Dotación requerida</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-top"><span class="kpi-label">Activos</span><span class="kpi-icon">👨‍💼</span></div>
+        <div class="kpi-value">{activos}</div>
       </div>
       <div class="kpi bronze">
         <div class="kpi-top"><span class="kpi-label">Por Reponer</span><span class="kpi-icon">🔄</span></div>
@@ -572,28 +578,15 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
         <div class="kpi-value">{faltas_consecutivas_count}</div>
         <div class="kpi-sub">Requiere seguimiento</div>
       </div>
-    </div>
-  </div>
-
-  <div>
-    <div class="section-label">Trabajadores</div>
-    <div class="kpi-row cols-4">
       <div class="kpi teal">
-        <div class="kpi-top"><span class="kpi-label">Activos</span><span class="kpi-icon">👥</span></div>
-        <div class="kpi-value">{activos}</div>
-      </div>
-      <div class="kpi bronze">
-        <div class="kpi-top"><span class="kpi-label">Cesados</span><span class="kpi-icon">🚪</span></div>
-        <div class="kpi-value">{cesados}</div>
-      </div>
-      <div class="kpi slate">
-        <div class="kpi-top"><span class="kpi-label">Total registrados</span><span class="kpi-icon">📋</span></div>
-        <div class="kpi-value">{total}</div>
+        <div class="kpi-top"><span class="kpi-label">% Cobertura</span><span class="kpi-icon">📋</span></div>
+        <div class="kpi-value">{porc_cobertura}%</div>
+        <div class="kpi-sub">{activos} de {programado}</div>
       </div>
       <div class="kpi purple">
-        <div class="kpi-top"><span class="kpi-label">Personal Observado</span><span class="kpi-icon">👁️</span></div>
+        <div class="kpi-top"><span class="kpi-label">Observados</span><span class="kpi-icon">🔴</span></div>
         <div class="kpi-value">{personal_observado}</div>
-        <div class="kpi-sub">2+ faltas ó 3+ tardanzas/30d</div>
+        <div class="kpi-sub">2+ faltas ó 3+ tardanzas</div>
       </div>
     </div>
   </div>
