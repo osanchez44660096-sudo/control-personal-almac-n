@@ -3233,6 +3233,249 @@ def generar_mensual_formato():
     # Congelar paneles en E4
     ws.freeze_panes = "E4"
 
+    # =====================
+    # PESTAÑA 2 - TARDANZAS
+    # =====================
+    hora_limite_tard = "08:05:00"
+    config_tard = Configuracion.query.first()
+    if config_tard:
+        hora_limite_tard = config_tard.hora_limite_tardanza
+
+    # Obtener registros de asistencia del período con hora
+    asist_registros = {(r.codigo, r.fecha): r.hora for r in Asistencia.query.filter(Asistencia.fecha.in_(fechas)).all()}
+
+    # Filtrar trabajadores que tuvieron AL MENOS UNA tardanza en el período
+    trabajadores_tarde = []
+    for t in trabajadores:
+        for fecha in fechas:
+            hora = asist_registros.get((t.codigo, fecha), None)
+            if hora and hora > hora_limite_tard:
+                trabajadores_tarde.append(t)
+                break
+
+    ws2 = wb.create_sheet(title=f"Tardanzas {mes_nombre} {año}")
+
+    # Título
+    total_cols2 = 4 + dias_mes + 1
+    ws2.merge_cells(f"A1:{get_column_letter(total_cols2)}1")
+    ws2["A1"] = f"REPORTE DE TARDANZAS — {mes_nombre} {año}  |  Hora límite: {hora_limite_tard}"
+    ws2["A1"].fill = PatternFill("solid", fgColor="7B3F00")
+    ws2["A1"].font = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
+    ws2["A1"].alignment = centro
+
+    # Leyenda
+    ws2.merge_cells(f"A2:{get_column_letter(total_cols2)}2")
+    ws2["A2"] = "Se muestra la hora de marcación. Celdas en naranja = tardanza registrada."
+    ws2["A2"].font = Font(name="Calibri", size=8, italic=True)
+    ws2["A2"].alignment = centro
+
+    # Encabezados fijos
+    for col, h in enumerate(["Nro", "Apellidos y Nombres", "Condición", "Área"], 1):
+        cell = ws2.cell(row=3, column=col, value=h)
+        cell.fill = COLOR_HDR2
+        cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+        cell.alignment = centro if col != 2 else izq
+        cell.border = borde
+
+    # Encabezados de fechas
+    for d in range(1, dias_mes + 1):
+        col = 4 + d
+        fecha_obj = fi + timedelta(days=d-1)
+        label = f"{fecha_obj.day}-{fecha_obj.strftime('%b').upper()}"
+        cell = ws2.cell(row=3, column=col, value=label)
+        cell.fill = COLOR_HDR2
+        cell.font = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
+        cell.alignment = centro
+        cell.border = borde
+
+    # Encabezado TOTAL
+    col_total2 = 4 + dias_mes + 1
+    cell_tot = ws2.cell(row=3, column=col_total2, value="TOTAL")
+    cell_tot.fill = PatternFill("solid", fgColor="1F3864")
+    cell_tot.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+    cell_tot.alignment = centro
+    cell_tot.border = borde
+
+    # Anchos pestaña 2
+    ws2.column_dimensions["A"].width = 5
+    ws2.column_dimensions["B"].width = 32
+    ws2.column_dimensions["C"].width = 11
+    ws2.column_dimensions["D"].width = 12
+    for d in range(1, dias_mes + 1):
+        ws2.column_dimensions[get_column_letter(4 + d)].width = 8
+    ws2.column_dimensions[get_column_letter(col_total2)].width = 7
+
+    COLOR_TARDE = PatternFill("solid", fgColor="FF6600")
+
+    # Datos tardanzas
+    for i, t in enumerate(trabajadores_tarde, 1):
+        row = 3 + i
+        ws2.row_dimensions[row].height = 14
+        ws2.cell(row=row, column=1, value=i).alignment = centro
+        ws2.cell(row=row, column=1).border = borde
+        ws2.cell(row=row, column=1).font = Font(name="Calibri", size=9)
+        ws2.cell(row=row, column=2, value=t.nombre).alignment = izq
+        ws2.cell(row=row, column=2).border = borde
+        ws2.cell(row=row, column=2).font = Font(name="Calibri", size=9)
+        ws2.cell(row=row, column=3, value=t.condicion).alignment = centro
+        ws2.cell(row=row, column=3).border = borde
+        ws2.cell(row=row, column=3).font = Font(name="Calibri", size=9)
+        ws2.cell(row=row, column=4, value=t.area).alignment = centro
+        ws2.cell(row=row, column=4).border = borde
+        ws2.cell(row=row, column=4).font = Font(name="Calibri", size=9)
+
+        total_tard = 0
+        for d, fecha in enumerate(fechas, 1):
+            col = 4 + d
+            cell = ws2.cell(row=row, column=col)
+            cell.alignment = centro
+            cell.border = borde
+            hora = asist_registros.get((t.codigo, fecha), None)
+            if hora and hora > hora_limite_tard:
+                cell.value = hora[:5]  # HH:MM
+                cell.fill = COLOR_TARDE
+                cell.font = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
+                total_tard += 1
+            else:
+                cell.value = ""
+                cell.fill = PatternFill("solid", fgColor="F2F2F2")
+                cell.font = Font(name="Calibri", size=9)
+
+        # Total por trabajador
+        cell_t = ws2.cell(row=row, column=col_total2, value=total_tard)
+        cell_t.alignment = centro
+        cell_t.border = borde
+        cell_t.font = Font(name="Calibri", size=9, bold=True)
+        cell_t.fill = PatternFill("solid", fgColor="FFE0CC")
+
+    ws2.freeze_panes = "E4"
+
+    # ====================
+    # PESTAÑA 3 - FALTAS
+    # ====================
+
+    # Filtrar trabajadores que tuvieron AL MENOS UNA falta en el período
+    trabajadores_falta = []
+    for t in trabajadores:
+        inc = None
+        for incd in incidencias_list:
+            if incd.codigo == t.codigo and incd.activo:
+                inc = incd
+                break
+        for fecha, fecha_iso in zip(fechas, fechas_iso):
+            if (t.codigo, fecha) not in asistencias:
+                # Verificar que no sea incidencia
+                es_incidencia = False
+                if inc and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
+                    es_incidencia = True
+                if not es_incidencia:
+                    trabajadores_falta.append(t)
+                    break
+
+    ws3 = wb.create_sheet(title=f"Faltas {mes_nombre} {año}")
+
+    # Título
+    total_cols3 = 4 + dias_mes + 1
+    ws3.merge_cells(f"A1:{get_column_letter(total_cols3)}1")
+    ws3["A1"] = f"REPORTE DE FALTAS — {mes_nombre} {año}"
+    ws3["A1"].fill = PatternFill("solid", fgColor="C00000")
+    ws3["A1"].font = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
+    ws3["A1"].alignment = centro
+
+    # Leyenda
+    ws3.merge_cells(f"A2:{get_column_letter(total_cols3)}2")
+    ws3["A2"] = "F = Falta injustificada. Celdas en rojo = falta registrada."
+    ws3["A2"].font = Font(name="Calibri", size=8, italic=True)
+    ws3["A2"].alignment = centro
+
+    # Encabezados fijos
+    for col, h in enumerate(["Nro", "Apellidos y Nombres", "Condición", "Área"], 1):
+        cell = ws3.cell(row=3, column=col, value=h)
+        cell.fill = COLOR_HDR2
+        cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+        cell.alignment = centro if col != 2 else izq
+        cell.border = borde
+
+    # Encabezados de fechas
+    for d in range(1, dias_mes + 1):
+        col = 4 + d
+        fecha_obj = fi + timedelta(days=d-1)
+        label = f"{fecha_obj.day}-{fecha_obj.strftime('%b').upper()}"
+        cell = ws3.cell(row=3, column=col, value=label)
+        cell.fill = COLOR_HDR2
+        cell.font = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
+        cell.alignment = centro
+        cell.border = borde
+
+    # Encabezado TOTAL
+    col_total3 = 4 + dias_mes + 1
+    cell_tot3 = ws3.cell(row=3, column=col_total3, value="TOTAL")
+    cell_tot3.fill = PatternFill("solid", fgColor="1F3864")
+    cell_tot3.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+    cell_tot3.alignment = centro
+    cell_tot3.border = borde
+
+    # Anchos pestaña 3
+    ws3.column_dimensions["A"].width = 5
+    ws3.column_dimensions["B"].width = 32
+    ws3.column_dimensions["C"].width = 11
+    ws3.column_dimensions["D"].width = 12
+    for d in range(1, dias_mes + 1):
+        ws3.column_dimensions[get_column_letter(4 + d)].width = 6
+    ws3.column_dimensions[get_column_letter(col_total3)].width = 7
+
+    # Datos faltas
+    for i, t in enumerate(trabajadores_falta, 1):
+        row = 3 + i
+        ws3.row_dimensions[row].height = 14
+        ws3.cell(row=row, column=1, value=i).alignment = centro
+        ws3.cell(row=row, column=1).border = borde
+        ws3.cell(row=row, column=1).font = Font(name="Calibri", size=9)
+        ws3.cell(row=row, column=2, value=t.nombre).alignment = izq
+        ws3.cell(row=row, column=2).border = borde
+        ws3.cell(row=row, column=2).font = Font(name="Calibri", size=9)
+        ws3.cell(row=row, column=3, value=t.condicion).alignment = centro
+        ws3.cell(row=row, column=3).border = borde
+        ws3.cell(row=row, column=3).font = Font(name="Calibri", size=9)
+        ws3.cell(row=row, column=4, value=t.area).alignment = centro
+        ws3.cell(row=row, column=4).border = borde
+        ws3.cell(row=row, column=4).font = Font(name="Calibri", size=9)
+
+        inc = None
+        for incd in incidencias_list:
+            if incd.codigo == t.codigo and incd.activo:
+                inc = incd
+                break
+
+        total_faltas = 0
+        for d, (fecha, fecha_iso) in enumerate(zip(fechas, fechas_iso), 1):
+            col = 4 + d
+            cell = ws3.cell(row=row, column=col)
+            cell.alignment = centro
+            cell.border = borde
+
+            es_incidencia = False
+            if inc and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin:
+                es_incidencia = True
+
+            if (t.codigo, fecha) not in asistencias and not es_incidencia:
+                cell.value = "F"
+                cell.fill = COLOR_F
+                cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
+                total_faltas += 1
+            else:
+                cell.value = ""
+                cell.fill = PatternFill("solid", fgColor="F2F2F2")
+                cell.font = Font(name="Calibri", size=9)
+
+        # Total por trabajador
+        cell_t3 = ws3.cell(row=row, column=col_total3, value=total_faltas)
+        cell_t3.alignment = centro
+        cell_t3.border = borde
+        cell_t3.font = Font(name="Calibri", size=9, bold=True)
+        cell_t3.fill = PatternFill("solid", fgColor="FFCCCC")
+
+    ws3.freeze_panes = "E4"
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
