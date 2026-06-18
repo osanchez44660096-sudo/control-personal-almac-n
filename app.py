@@ -358,37 +358,49 @@ button { width:100%; padding:15px; background:linear-gradient(90deg,#1a56db,#3b8
 <title>Control Personal</title>
 <style>
 * {{ margin:0; padding:0; box-sizing:border-box; }}
-body {{ font-family:'Segoe UI',sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1444 50%, #2d1b69 100%); color:#fff; padding:12px; min-height:100vh; }}
-.topbar {{ background: linear-gradient(90deg, #1e3a5f 0%, #4338ca 100%); border-radius:12px; padding:12px 16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }}
-.topbar-title {{ font-size:13px; font-weight:700; }}
-.topbar-date {{ font-size:11px; background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px; }}
-.section {{ font-size:10px; font-weight:700; letter-spacing:2px; color:#94a3b8; text-transform:uppercase; margin:14px 0 6px; }}
+body {{ font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,#0a0e1a 0%,#12093a 40%,#1e0a4a 70%,#2d1060 100%); color:#fff; padding:10px; min-height:100vh; }}
+.topbar {{ background:linear-gradient(90deg,#0f1b3d,#1a237e,#4a148c); border-radius:10px; padding:10px 14px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }}
+.topbar-title {{ font-size:11px; font-weight:700; }}
+.topbar-date {{ font-size:10px; background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px; }}
+.section-title {{ font-size:14px; font-weight:800; color:#fff; margin:12px 0 8px; display:flex; align-items:center; gap:6px; text-shadow:0 0 15px rgba(255,255,255,0.3); }}
 .kpi-grid {{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:4px; }}
-.kpi {{ background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border-radius:12px; padding:12px 14px; border:1px solid rgba(255,255,255,0.08); }}
-.kpi.blue {{ border-color:rgba(59,130,246,0.5); box-shadow:0 0 16px rgba(59,130,246,0.18); }}
-.kpi.red {{ border-color:rgba(239,68,68,0.5); box-shadow:0 0 16px rgba(239,68,68,0.18); }}
-.kpi.gold {{ border-color:rgba(245,158,11,0.5); box-shadow:0 0 16px rgba(245,158,11,0.18); }}
-.kpi.purple {{ border-color:rgba(168,85,247,0.5); box-shadow:0 0 16px rgba(168,85,247,0.18); }}
-.kpi.teal {{ border-color:rgba(20,184,166,0.5); box-shadow:0 0 16px rgba(20,184,166,0.18); }}
-.kpi.bronze {{ border-color:rgba(194,120,3,0.5); box-shadow:0 0 16px rgba(194,120,3,0.18); }}
-.kpi.slate {{ border-color:rgba(148,163,184,0.4); box-shadow:0 0 16px rgba(148,163,184,0.12); }}
-.kpi-top {{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }}
-.kpi-label {{ font-size:9px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; font-weight:700; }}
-.kpi-icon {{ font-size:15px; }}
-.kpi-value {{ font-size:26px; font-weight:800; }}
-.kpi.blue .kpi-value {{ color:#60a5fa; }}
-.kpi.red .kpi-value {{ color:#f87171; }}
-.kpi.gold .kpi-value {{ color:#fbbf24; }}
-.kpi.purple .kpi-value {{ color:#c084fc; }}
-.kpi.teal .kpi-value {{ color:#2dd4bf; }}
-.kpi.bronze .kpi-value {{ color:#fb923c; }}
-.kpi.slate .kpi-value {{ color:#cbd5e1; }}
-.kpi-sub {{ font-size:9px; color:#64748b; margin-top:4px; }}
+.kc {{ border-radius:12px; padding:11px 13px; position:relative; overflow:hidden; border:1px solid; min-height:90px; display:flex; flex-direction:column; justify-content:space-between; }}
+.kc-top {{ display:flex; align-items:center; justify-content:space-between; }}
+.kc-label {{ font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; opacity:0.9; }}
+.kc-icon {{ font-size:15px; }}
+.kc-value {{ font-size:26px; font-weight:900; line-height:1; margin:2px 0; }}
+.kc-sub {{ font-size:9px; opacity:0.7; }}
+.kc-bigicon {{ position:absolute; right:8px; bottom:6px; font-size:28px; opacity:0.2; }}
+.kc-green {{ background:linear-gradient(135deg,rgba(16,85,30,0.7),rgba(5,46,22,0.95)); border-color:rgba(34,197,94,0.6); box-shadow:0 0 16px rgba(34,197,94,0.2); color:#4ade80; }}
+.kc-green .kc-label,.kc-green .kc-sub {{ color:#86efac; }}
+.kc-red {{ background:linear-gradient(135deg,rgba(127,29,29,0.7),rgba(69,10,10,0.95)); border-color:rgba(239,68,68,0.6); box-shadow:0 0 16px rgba(239,68,68,0.2); color:#f87171; }}
+.kc-red .kc-label,.kc-red .kc-sub {{ color:#fca5a5; }}
+.kc-gold {{ background:linear-gradient(135deg,rgba(120,80,0,0.7),rgba(78,46,0,0.95)); border-color:rgba(245,158,11,0.6); box-shadow:0 0 16px rgba(245,158,11,0.2); color:#fbbf24; }}
+.kc-gold .kc-label,.kc-gold .kc-sub {{ color:#fde68a; }}
+.kc-teal {{ background:linear-gradient(135deg,rgba(6,78,59,0.7),rgba(2,44,34,0.95)); border-color:rgba(20,184,166,0.6); box-shadow:0 0 16px rgba(20,184,166,0.2); color:#2dd4bf; }}
+.kc-teal .kc-label,.kc-teal .kc-sub {{ color:#99f6e4; }}
+.kc-purple {{ background:linear-gradient(135deg,rgba(76,29,149,0.7),rgba(46,16,101,0.95)); border-color:rgba(168,85,247,0.6); box-shadow:0 0 16px rgba(168,85,247,0.2); color:#c084fc; }}
+.kc-purple .kc-label,.kc-purple .kc-sub {{ color:#d8b4fe; }}
+.kc-orange {{ background:linear-gradient(135deg,rgba(124,45,18,0.7),rgba(67,20,7,0.95)); border-color:rgba(249,115,22,0.6); box-shadow:0 0 16px rgba(249,115,22,0.2); color:#fb923c; }}
+.kc-orange .kc-label,.kc-orange .kc-sub {{ color:#fed7aa; }}
+.kc-blue {{ background:linear-gradient(135deg,rgba(29,78,216,0.5),rgba(17,24,95,0.95)); border-color:rgba(59,130,246,0.6); box-shadow:0 0 16px rgba(59,130,246,0.2); color:#60a5fa; }}
+.kc-blue .kc-label,.kc-blue .kc-sub {{ color:#bfdbfe; }}
+.kc-cyan {{ background:linear-gradient(135deg,rgba(14,116,144,0.5),rgba(8,51,68,0.95)); border-color:rgba(6,182,212,0.6); box-shadow:0 0 16px rgba(6,182,212,0.2); color:#22d3ee; }}
+.kc-cyan .kc-label,.kc-cyan .kc-sub {{ color:#a5f3fc; }}
+.kc-brown {{ background:linear-gradient(135deg,rgba(120,53,15,0.5),rgba(67,20,7,0.95)); border-color:rgba(217,119,6,0.6); box-shadow:0 0 16px rgba(217,119,6,0.2); color:#f59e0b; }}
+.kc-brown .kc-label,.kc-brown .kc-sub {{ color:#fde68a; }}
+.kc-darkred {{ background:linear-gradient(135deg,rgba(153,27,27,0.5),rgba(69,10,10,0.95)); border-color:rgba(220,38,38,0.6); box-shadow:0 0 16px rgba(220,38,38,0.2); color:#ef4444; }}
+.kc-darkred .kc-label,.kc-darkred .kc-sub {{ color:#fca5a5; }}
+.kc-violet {{ background:linear-gradient(135deg,rgba(109,40,217,0.5),rgba(55,14,120,0.95)); border-color:rgba(139,92,246,0.6); box-shadow:0 0 16px rgba(139,92,246,0.2); color:#a78bfa; }}
+.kc-violet .kc-label,.kc-violet .kc-sub {{ color:#ddd6fe; }}
+.kc-crimson {{ background:linear-gradient(135deg,rgba(136,19,55,0.5),rgba(76,5,25,0.95)); border-color:rgba(244,63,94,0.6); box-shadow:0 0 16px rgba(244,63,94,0.2); color:#fb7185; }}
+.kc-crimson .kc-label,.kc-crimson .kc-sub {{ color:#fecdd3; }}
+.section-label {{ font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#94a3b8; margin-bottom:6px; margin-top:12px; }}
 .btn-grid {{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }}
-.btn {{ display:flex; align-items:center; gap:10px; background:linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:12px; text-decoration:none; color:#e2e8f0; font-size:12px; font-weight:600; }}
-.btn:active {{ background:#1a56db; }}
-.btn-icon {{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }}
-.badge {{ margin-left:auto; background:#ef4444; color:#fff; font-size:10px; padding:2px 6px; border-radius:99px; }}
+.btn {{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:11px 12px; text-decoration:none; color:#e2e8f0; font-size:12px; font-weight:600; }}
+.btn:active {{ background:rgba(59,130,246,0.3); border-color:#3b82f6; }}
+.btn-icon {{ width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }}
+.badge {{ margin-left:auto; background:#ef4444; color:#fff; font-size:10px; padding:2px 6px; border-radius:99px; font-weight:700; }}
 </style>
 </head>
 <body>
@@ -398,47 +410,87 @@ body {{ font-family:'Segoe UI',sans-serif; background: linear-gradient(135deg, #
   <div class="topbar-date">{fecha_larga}</div>
 </div>
 
-<div class="section">Indicadores del día</div>
+<div class="section-title">📊 INDICADORES DEL DÍA</div>
 <div class="kpi-grid">
-  <div class="kpi blue">
-    <div class="kpi-top"><span class="kpi-label">Asistencias</span><span class="kpi-icon">✅</span></div>
-    <div class="kpi-value">{asistencias_hoy}</div>
-    <div class="kpi-sub">{porcentaje}% de {activos} activos</div>
+  <div class="kc kc-green">
+    <div class="kc-top"><span class="kc-label">Personal Asistente</span><span class="kc-icon">✅</span></div>
+    <div class="kc-value">{asistencias_hoy}</div>
+    <div class="kc-sub">{asistencias_hoy} confirmadas</div>
+    <div class="kc-bigicon">✔</div>
   </div>
-  <div class="kpi red">
-    <div class="kpi-top"><span class="kpi-label">Faltantes</span><span class="kpi-icon">❌</span></div>
-    <div class="kpi-value">{faltantes}</div>
-    <div class="kpi-sub">Sin marcar hoy</div>
+  <div class="kc kc-red">
+    <div class="kc-top"><span class="kc-label">Personal Ausente</span><span class="kc-icon">❌</span></div>
+    <div class="kc-value">{faltantes}</div>
+    <div class="kc-sub">{faltantes} faltas del día</div>
+    <div class="kc-bigicon">✗</div>
   </div>
-  <div class="kpi gold">
-    <div class="kpi-top"><span class="kpi-label">Horas extras</span><span class="kpi-icon">⏰</span></div>
-    <div class="kpi-value">{horas_hoy}</div>
-    <div class="kpi-sub">Registradas hoy</div>
+  <div class="kc kc-gold">
+    <div class="kc-top"><span class="kc-label">Tardanzas</span><span class="kc-icon">⏰</span></div>
+    <div class="kc-value">{tardanzas_hoy}</div>
+    <div class="kc-sub">Después {hora_limite}</div>
+    <div class="kc-bigicon">🕐</div>
   </div>
-  <div class="kpi purple">
-    <div class="kpi-top"><span class="kpi-label">Incidencias</span><span class="kpi-icon">🏥</span></div>
-    <div class="kpi-value">{incidencias_activas}</div>
-    <div class="kpi-sub">Activas</div>
+  <div class="kc kc-teal">
+    <div class="kc-top"><span class="kc-label">% Asistencia</span><span class="kc-icon">📈</span></div>
+    <div class="kc-value">{porc_asistencia}%</div>
+    <div class="kc-sub">Asistencia Diaria</div>
+    <div class="kc-bigicon">📊</div>
+  </div>
+  <div class="kc kc-purple">
+    <div class="kc-top"><span class="kc-label">% Ausentismo</span><span class="kc-icon">📉</span></div>
+    <div class="kc-value">{porc_ausentismo}%</div>
+    <div class="kc-sub">Ausentismo Diario</div>
+    <div class="kc-bigicon">📉</div>
+  </div>
+  <div class="kc kc-orange">
+    <div class="kc-top"><span class="kc-label">Incidencias</span><span class="kc-icon">🚨</span></div>
+    <div class="kc-value">{incidencias_activas}</div>
+    <div class="kc-sub">Activas</div>
+    <div class="kc-bigicon">🔔</div>
   </div>
 </div>
 
-<div class="section">Trabajadores</div>
+<div class="section-title">👥 DOTACIÓN DE PERSONAL</div>
 <div class="kpi-grid">
-  <div class="kpi teal">
-    <div class="kpi-top"><span class="kpi-label">Activos</span><span class="kpi-icon">👥</span></div>
-    <div class="kpi-value">{activos}</div>
+  <div class="kc kc-blue">
+    <div class="kc-top"><span class="kc-label">Programado</span><span class="kc-icon">👥</span></div>
+    <div class="kc-value">{programado}</div>
+    <div class="kc-sub">Fuerza laboral</div>
+    <div class="kc-bigicon">👥</div>
   </div>
-  <div class="kpi bronze">
-    <div class="kpi-top"><span class="kpi-label">Cesados</span><span class="kpi-icon">🚪</span></div>
-    <div class="kpi-value">{cesados}</div>
+  <div class="kc kc-cyan">
+    <div class="kc-top"><span class="kc-label">Activos</span><span class="kc-icon">👨‍💼</span></div>
+    <div class="kc-value">{activos}</div>
+    <div class="kc-sub">{activos} confirmados</div>
+    <div class="kc-bigicon">🧑</div>
   </div>
-  <div class="kpi slate">
-    <div class="kpi-top"><span class="kpi-label">Total registrados</span><span class="kpi-icon">📋</span></div>
-    <div class="kpi-value">{total}</div>
+  <div class="kc kc-brown">
+    <div class="kc-top"><span class="kc-label">Por Reponer</span><span class="kc-icon">🔄</span></div>
+    <div class="kc-value">{por_reponer}</div>
+    <div class="kc-sub">Vacantes urgentes</div>
+    <div class="kc-bigicon">🔄</div>
+  </div>
+  <div class="kc kc-darkred">
+    <div class="kc-top"><span class="kc-label">3 Faltas Consec.</span><span class="kc-icon">⚠️</span></div>
+    <div class="kc-value">{faltas_consecutivas_count}</div>
+    <div class="kc-sub">Seguimiento</div>
+    <div class="kc-bigicon">⚠</div>
+  </div>
+  <div class="kc kc-violet">
+    <div class="kc-top"><span class="kc-label">% Cobertura</span><span class="kc-icon">📋</span></div>
+    <div class="kc-value">{porc_cobertura}%</div>
+    <div class="kc-sub">Meta: >95%</div>
+    <div class="kc-bigicon">📊</div>
+  </div>
+  <div class="kc kc-crimson">
+    <div class="kc-top"><span class="kc-label">Observados</span><span class="kc-icon">🔴</span></div>
+    <div class="kc-value">{personal_observado}</div>
+    <div class="kc-sub">Personal Observado</div>
+    <div class="kc-bigicon">👁</div>
   </div>
 </div>
 
-<div class="section">Módulos</div>
+<div class="section-label">MÓDULOS</div>
 <div class="btn-grid">
   <a href="/asistencia" class="btn"><span class="btn-icon" style="background:#0d9488;">✅</span>Asistencia QR</a>
   <a href="/reporte_diario" class="btn"><span class="btn-icon" style="background:#2563eb;">📅</span>Reporte Diario</a>
@@ -450,7 +502,7 @@ body {{ font-family:'Segoe UI',sans-serif; background: linear-gradient(135deg, #
   <a href="/reporte_incidencias" class="btn"><span class="btn-icon" style="background:#475569;">📋</span>Rep. Incidencias</a>
   <a href="/trabajadores" class="btn"><span class="btn-icon" style="background:#7c3aed;">👥</span>Trabajadores</a>
   <a href="/reporte_movimientos" class="btn"><span class="btn-icon" style="background:#2563eb;">🔄</span>Movimientos</a>
-  <a href="/exportar_mensual_formato" class="btn"><span class="btn-icon" style="background:#16a34a;">📊</span>Control Mensual Excel</a>
+  <a href="/exportar_mensual_formato" class="btn"><span class="btn-icon" style="background:#16a34a;">📊</span>Control Mensual</a>
 </div>
 
 </body>
