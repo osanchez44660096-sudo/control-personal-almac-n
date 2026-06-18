@@ -3421,16 +3421,14 @@ def generar_mensual_formato():
         cell.border = borde
 
     # Encabezados de fechas
-    COLOR_FDS = PatternFill("solid", fgColor="4A4A4A")  # Gris oscuro fines de semana
-
     for d in range(1, dias_mes + 1):
         col = 4 + d
         fecha_obj = fi + timedelta(days=d-1)
         label = f"{fecha_obj.day}-{fecha_obj.strftime('%b').upper()}"
-        es_fds = fecha_obj.weekday() >= 5  # sábado o domingo
-        cell = ws.cell(row=3, column=col, value=label)
-        cell.fill = COLOR_FDS if es_fds else COLOR_HDR2
-        cell.font = Font(name="Calibri", size=8, bold=True, color="CCCCCC" if es_fds else "FFFFFF")
+        es_fds_hdr = fecha_obj.weekday() >= 5
+        cell = ws3.cell(row=3, column=col, value=label)
+        cell.fill = PatternFill("solid", fgColor="4A4A4A") if es_fds_hdr else COLOR_HDR2
+        cell.font = Font(name="Calibri", size=8, bold=True, color="CCCCCC" if es_fds_hdr else "FFFFFF")
         cell.alignment = centro
         cell.border = borde
 
