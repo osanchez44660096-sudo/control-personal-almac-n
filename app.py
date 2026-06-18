@@ -410,7 +410,7 @@ body {{ font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,#0a
   <div class="topbar-date">{fecha_larga}</div>
 </div>
 
-<div class="section-title">📊 INDICADORES DEL DÍA</div>
+<div class="section-title">📊 INDICADORES OPERATIVOS DEL DÍA</div>
 <div class="kpi-grid">
   <div class="kc kc-green">
     <div class="kc-top"><span class="kc-label">Personal Asistente</span><span class="kc-icon">✅</span></div>
@@ -490,7 +490,7 @@ body {{ font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,#0a
   </div>
 </div>
 
-<div class="section-label">MÓDULOS</div>
+<div class="section-title">⚙️ GESTIÓN DE PERSONAL</div>
 <div class="btn-grid">
   <a href="/asistencia" class="btn"><span class="btn-icon" style="background:#0d9488;">✅</span>Asistencia QR</a>
   <a href="/reporte_diario" class="btn"><span class="btn-icon" style="background:#2563eb;">📅</span>Reporte Diario</a>
@@ -582,7 +582,7 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
 <div class="body">
 
   <div>
-    <div class="section-title">📊 INDICADORES DEL DÍA</div>
+    <div class="section-title">📊 INDICADORES OPERATIVOS DEL DÍA</div>
     <div class="kpi-grid" style="margin-top:8px;">
       <div class="kc kc-green">
         <div class="kc-top"><span class="kc-label">Personal Asistente</span><span class="kc-icon">✅</span></div>
@@ -666,7 +666,7 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
   </div>
 
   <div>
-    <div class="section-label">MÓDULOS</div>
+    <div class="section-title">⚙️ GESTIÓN DE PERSONAL</div>
     <div style="display:flex; flex-direction:column; gap:7px;">
       <div class="menu-row cols-4">
         <a href="/asistencia" class="btn"><div class="btn-icon" style="background:#0d9488;">✅</div>Asistencia QR</a>
