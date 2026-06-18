@@ -48,6 +48,11 @@ class Asistencia(db.Model):
     tipo = db.Column(db.String(30))
     escaneado_por = db.Column(db.String(50))  # NUEVO
 
+class Configuracion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    dotacion_programada = db.Column(db.Integer, default=36)
+    hora_limite_tardanza = db.Column(db.String(8), default="08:05:00")
+    
 class Movimiento(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -265,9 +270,80 @@ button { width:100%; padding:15px; background:linear-gradient(90deg,#1a56db,#3b8
     especiales_hoy = AsistenciaEspecial.query.filter_by(fecha=hoy).count()
     incidencias_activas = Incidencia.query.filter_by(activo=True).count()
     faltantes = activos - asistencias_hoy
-    porcentaje = round((asistencias_hoy / activos * 100)) if activos > 0 else 0
 
-    porcentaje = round((asistencias_hoy / activos * 100)) if activos > 0 else 0
+    # --- CONFIGURACION ---
+    config = Configuracion.query.first()
+    if not config:
+        config = Configuracion(dotacion_programada=36, hora_limite_tardanza="08:05:00")
+        db.session.add(config)
+        db.session.commit()
+
+    programado = config.dotacion_programada
+    hora_limite = config.hora_limite_tardanza
+
+    # --- NUEVOS INDICADORES ---
+    tardanzas_hoy = Asistencia.query.filter_by(fecha=hoy).filter(
+        Asistencia.hora > hora_limite
+    ).count()
+
+    por_reponer = max(0, programado - activos)
+
+    porc_asistencia = round((asistencias_hoy / programado * 100), 1) if programado > 0 else 0
+    porc_ausentismo = round((faltantes / programado * 100), 1) if programado > 0 else 0
+    porc_cobertura = round((activos / programado * 100), 1) if programado > 0 else 0
+
+    # --- 3 FALTAS CONSECUTIVAS (últimos 7 días) ---
+    from datetime import date as date_class, timedelta
+    from collections import defaultdict
+
+    hoy_date = date_class.today()
+    ultimos_7 = [(hoy_date - timedelta(days=i)).strftime("%d/%m/%Y") for i in range(7)]
+
+    asist_7 = db.session.query(Asistencia.codigo, Asistencia.fecha).filter(
+        Asistencia.fecha.in_(ultimos_7)
+    ).all()
+    asist_set_7 = set((a.codigo, a.fecha) for a in asist_7)
+
+    trabajadores_activos_lista = Trabajador.query.filter_by(estado="ACTIVO").all()
+
+    faltas_consecutivas_count = 0
+    for t in trabajadores_activos_lista:
+        consecutivas = 0
+        max_cons = 0
+        for dia in ultimos_7:
+            if (t.codigo, dia) not in asist_set_7:
+                consecutivas += 1
+                max_cons = max(max_cons, consecutivas)
+            else:
+                consecutivas = 0
+        if max_cons >= 3:
+            faltas_consecutivas_count += 1
+
+    # --- PERSONAL OBSERVADO (últimos 30 días) ---
+    hace_30 = [(hoy_date - timedelta(days=i)).strftime("%d/%m/%Y") for i in range(30)]
+
+    asist_30 = db.session.query(
+        Asistencia.codigo, Asistencia.fecha, Asistencia.hora
+    ).filter(Asistencia.fecha.in_(hace_30)).all()
+
+    # Días laborales = días que tuvieron al menos 1 asistencia
+    dias_laborales = set(a.fecha for a in asist_30)
+
+    # Presencias y tardanzas por trabajador
+    presencias_por_codigo = defaultdict(set)
+    tardanzas_por_codigo = defaultdict(int)
+    for a in asist_30:
+        presencias_por_codigo[a.codigo].add(a.fecha)
+        if a.hora and a.hora > hora_limite:
+            tardanzas_por_codigo[a.codigo] += 1
+
+    personal_observado = 0
+    for t in trabajadores_activos_lista:
+        faltas_worker = len(dias_laborales - presencias_por_codigo[t.codigo])
+        if faltas_worker >= 2 or tardanzas_por_codigo[t.codigo] >= 3:
+            personal_observado += 1
+
+    porcentaje = porc_asistencia
 
     user_agent = request.headers.get('User-Agent', '').lower()
     es_celular = any(x in user_agent for x in ['mobile', 'android', 'iphone', 'ipad'])
