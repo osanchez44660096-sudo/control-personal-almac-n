@@ -3201,7 +3201,13 @@ def generar_mensual_formato():
 
             # Estado
             fecha_obj_d = fi + timedelta(days=d-1)
-            es_fds = fecha_obj_d.weekday() >= 5  # sábado o domingo
+            FERIADOS = [
+                "01/01/2026", "09/04/2026", "10/04/2026", "01/05/2026",
+                "07/06/2026", "29/06/2026", "28/07/2026", "29/07/2026",
+                "30/08/2026", "08/10/2026", "01/11/2026", "08/12/2026",
+                "25/12/2026"
+            ]
+            es_fds = fecha_obj_d.weekday() >= 5 or fecha in FERIADOS  # sábado o domingo
 
             if es_fds:
                 cell.value = ""
@@ -3286,9 +3292,10 @@ def generar_mensual_formato():
         col = 4 + d
         fecha_obj = fi + timedelta(days=d-1)
         label = f"{fecha_obj.day}-{fecha_obj.strftime('%b').upper()}"
-        cell = ws2.cell(row=3, column=col, value=label)
-        cell.fill = COLOR_HDR2
-        cell.font = Font(name="Calibri", size=8, bold=True, color="FFFFFF")
+        es_fds_hdr = fecha_obj.weekday() >= 5
+        cell = ws3.cell(row=3, column=col, value=label)
+        cell.fill = PatternFill("solid", fgColor="4A4A4A") if es_fds_hdr else COLOR_HDR2
+        cell.font = Font(name="Calibri", size=8, bold=True, color="CCCCCC" if es_fds_hdr else "FFFFFF")
         cell.alignment = centro
         cell.border = borde
 
@@ -3335,7 +3342,13 @@ def generar_mensual_formato():
             cell.alignment = centro
             cell.border = borde
             fecha_obj_d = fi + timedelta(days=d-1)
-            es_fds = fecha_obj_d.weekday() >= 5
+            FERIADOS = [
+                "01/01/2026", "09/04/2026", "10/04/2026", "01/05/2026",
+                "07/06/2026", "29/06/2026", "28/07/2026", "29/07/2026",
+                "30/08/2026", "08/10/2026", "01/11/2026", "08/12/2026",
+                "25/12/2026"
+            ]
+            es_fds = fecha_obj_d.weekday() >= 5 or fecha in FERIADOS
             if es_fds:
                 cell.value = ""
                 cell.fill = PatternFill("solid", fgColor="D9D9D9")
@@ -3468,7 +3481,13 @@ def generar_mensual_formato():
             cell.alignment = centro
             cell.border = borde
             fecha_obj_d = fi + timedelta(days=d-1)
-            es_fds = fecha_obj_d.weekday() >= 5
+            FERIADOS = [
+                "01/01/2026", "09/04/2026", "10/04/2026", "01/05/2026",
+                "07/06/2026", "29/06/2026", "28/07/2026", "29/07/2026",
+                "30/08/2026", "08/10/2026", "01/11/2026", "08/12/2026",
+                "25/12/2026"
+            ]
+            es_fds = fecha_obj_d.weekday() >= 5 or fecha in FERIADOS
             if es_fds:
                 cell.value = ""
                 cell.fill = PatternFill("solid", fgColor="D9D9D9")
