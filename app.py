@@ -3949,7 +3949,7 @@ def generar_mensual_formato():
 
     ws5 = wb.create_sheet(title=f"Resumen {mes_nombre} {año}")
 
-     ws5.merge_cells("A1:T1")
+    ws5.merge_cells("A1:T1")
     ws5["A1"] = f"RESUMEN GENERAL — {mes_nombre} {año}  |  Ranking de Desempeño"
     ws5["A1"].fill = PatternFill("solid", fgColor="1F3864")
     ws5["A1"].font = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
