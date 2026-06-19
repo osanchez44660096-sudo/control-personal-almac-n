@@ -292,26 +292,34 @@ button { width:100%; padding:15px; background:linear-gradient(90deg,#1a56db,#3b8
     porc_ausentismo = round((faltantes / programado * 100), 1) if programado > 0 else 0
     porc_cobertura = round((activos / programado * 100), 1) if programado > 0 else 0
 
-    # --- 3 FALTAS CONSECUTIVAS (últimos 7 días) ---
+    # --- DIAS DEL MES EN CURSO (hasta hoy) ---
     from datetime import date as date_class, timedelta
     from collections import defaultdict
 
     hoy_date = date_class.today()
-    ultimos_7 = [(hoy_date - timedelta(days=i)).strftime("%d/%m/%Y") for i in range(7)]
+    primer_dia_mes = hoy_date.replace(day=1)
 
-    asist_7 = db.session.query(Asistencia.codigo, Asistencia.fecha).filter(
-        Asistencia.fecha.in_(ultimos_7)
-    ).all()
-    asist_set_7 = set((a.codigo, a.fecha) for a in asist_7)
+    dias_mes_actual = []
+    dia_cursor = primer_dia_mes
+    while dia_cursor <= hoy_date:
+        dias_mes_actual.append(dia_cursor.strftime("%d/%m/%Y"))
+        dia_cursor += timedelta(days=1)
+
+    asist_mes = db.session.query(
+        Asistencia.codigo, Asistencia.fecha, Asistencia.hora
+    ).filter(Asistencia.fecha.in_(dias_mes_actual)).all()
+
+    asist_set_mes = set((a.codigo, a.fecha) for a in asist_mes)
 
     trabajadores_activos_lista = Trabajador.query.filter_by(estado="ACTIVO").all()
 
+    # --- 3 FALTAS CONSECUTIVAS (mes en curso) ---
     faltas_consecutivas_count = 0
     for t in trabajadores_activos_lista:
         consecutivas = 0
         max_cons = 0
-        for dia in ultimos_7:
-            if (t.codigo, dia) not in asist_set_7:
+        for dia in dias_mes_actual:
+            if (t.codigo, dia) not in asist_set_mes:
                 consecutivas += 1
                 max_cons = max(max_cons, consecutivas)
             else:
@@ -319,28 +327,15 @@ button { width:100%; padding:15px; background:linear-gradient(90deg,#1a56db,#3b8
         if max_cons >= 3:
             faltas_consecutivas_count += 1
 
-    # --- PERSONAL OBSERVADO (últimos 30 días) ---
-    hace_30 = [(hoy_date - timedelta(days=i)).strftime("%d/%m/%Y") for i in range(30)]
-
-    asist_30 = db.session.query(
-        Asistencia.codigo, Asistencia.fecha, Asistencia.hora
-    ).filter(Asistencia.fecha.in_(hace_30)).all()
-
-    # Días laborales = días que tuvieron al menos 1 asistencia
-    dias_laborales = set(a.fecha for a in asist_30)
-
-    # Presencias y tardanzas por trabajador
-    presencias_por_codigo = defaultdict(set)
+    # --- PERSONAL OBSERVADO (solo tardanzas, mes en curso) ---
     tardanzas_por_codigo = defaultdict(int)
-    for a in asist_30:
-        presencias_por_codigo[a.codigo].add(a.fecha)
+    for a in asist_mes:
         if a.hora and a.hora > hora_limite:
             tardanzas_por_codigo[a.codigo] += 1
 
     personal_observado = 0
     for t in trabajadores_activos_lista:
-        faltas_worker = len(dias_laborales - presencias_por_codigo[t.codigo])
-        if faltas_worker >= 2 or tardanzas_por_codigo[t.codigo] >= 3:
+        if tardanzas_por_codigo[t.codigo] >= 3:
             personal_observado += 1
 
     porcentaje = porc_asistencia
