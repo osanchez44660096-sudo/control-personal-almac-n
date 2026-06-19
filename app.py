@@ -3870,8 +3870,14 @@ def generar_mensual_formato():
         dias_trab = 0
         faltas_t = 0
         tardanzas_t = 0
+        sabados_t = 0
+        domingos_t = 0
         for fecha, fecha_iso in zip(fechas, fechas_iso):
             fecha_obj_d = datetime.strptime(fecha, "%d/%m/%Y")
+            if fecha_obj_d.weekday() == 5 and (t.codigo, fecha) in asistencias:
+                sabados_t += 1
+            if fecha_obj_d.weekday() == 6 and (t.codigo, fecha) in asistencias:
+                domingos_t += 1
             if fecha_obj_d.weekday() >= 5 or fecha in FERIADOS:
                 continue
             es_incidencia = inc and inc.fecha_inicio <= fecha_iso <= inc.fecha_fin
@@ -3931,6 +3937,7 @@ def generar_mensual_formato():
         resumen_data.append({
             "nombre": t.nombre, "condicion": t.condicion, "area": t.area,
             "dias_trab": dias_trab, "faltas": faltas_t, "tardanzas": tardanzas_t,
+            "sabados_asist": sabados_t, "domingos_asist": domingos_t,
             "horas": horas_t, "conducta": conducta, "disciplina": disciplina,
             "productividad": productividad, "seguridad": seguridad, "calidad": calidad,
             "equipo": equipo, "permisos": permisos, "positivas": positivas,
@@ -3988,7 +3995,7 @@ def generar_mensual_formato():
         fill_row = colores_nivel.get(r["nivel"], PatternFill("solid", fgColor="FFFFFF"))
 
         valores = [i, r["nombre"], r["condicion"], r["area"], r["dias_trab"], r["faltas"],
-                   r["tardanzas"], r["horas"], sabados_count, domingos_count,
+                   r["tardanzas"], r["horas"], r["sabados_asist"], r["domingos_asist"],
                    r["conducta"], r["disciplina"], r["productividad"], r["seguridad"],
                    r["calidad"], r["equipo"], r["permisos"], r["positivas"],
                    r["puntaje"], r["nivel"]]
