@@ -1137,12 +1137,22 @@ def observaciones():
             "Cumplimiento ejemplar de normas de seguridad", "Iniciativa para resolver problemas",
             "Puntualidad destacada", "Compromiso sobresaliente",
             "Propuesta de mejora implementada", "Excelente actitud laboral"
-        ]
+        ],
+        "📄 Permisos": [
+            "Permiso personal autorizado", "Cita médica", "Descanso médico",
+            "Emergencia familiar", "Trámite bancario", "Comisión de servicio",
+            "Capacitación", "Estudios", "Licencia autorizada"
+        ],
     }
 
     bloques_categorias = ""
     for cat, items in categorias.items():
-        tipo = "POSITIVA" if "Positivas" in cat else "NEGATIVA"
+        if "Positivas" in cat:
+            tipo = "POSITIVA"
+        elif "Permisos" in cat:
+            tipo = "PERMISO"
+        else:
+            tipo = "NEGATIVA"
         bloques_categorias += f'<div class="cat-block"><div class="cat-title">{cat}</div>'
         for item in items:
             bloques_categorias += f'''
