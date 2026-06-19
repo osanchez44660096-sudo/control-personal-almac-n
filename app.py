@@ -3949,23 +3949,68 @@ def generar_mensual_formato():
 
     ws5 = wb.create_sheet(title=f"Resumen {mes_nombre} {año}")
 
-    ws5.merge_cells("A1:S1")
+     ws5.merge_cells("A1:T1")
     ws5["A1"] = f"RESUMEN GENERAL — {mes_nombre} {año}  |  Ranking de Desempeño"
     ws5["A1"].fill = PatternFill("solid", fgColor="1F3864")
     ws5["A1"].font = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
     ws5["A1"].alignment = centro
 
-    ws5.merge_cells("A2:S2")
-    ws5["A2"] = "🟢 Excelente ≥120  |  🔵 Muy Bueno 100-119  |  🟡 Bueno 80-99  |  🟠 Regular 60-79  |  🔴 Crítico <60"
-    ws5["A2"].font = Font(name="Calibri", size=8, italic=True)
-    ws5["A2"].alignment = centro
+    # Leyenda fila 2 - cada tramo con su color
+    leyenda = [
+        ("A2", "D2", "🟢 Excelente ≥120", "006100"),
+        ("E2", "H2", "🔵 Muy Bueno 100-119", "1F4E78"),
+        ("I2", "L2", "🟡 Bueno 80-99", "7F6000"),
+        ("M2", "P2", "🟠 Regular 60-79", "974706"),
+        ("Q2", "T2", "🔴 Crítico <60", "9C0006"),
+    ]
+    for celda_inicio, celda_fin, texto, color in leyenda:
+        ws5.merge_cells(f"{celda_inicio}:{celda_fin}")
+        ws5[celda_inicio] = texto
+        ws5[celda_inicio].font = Font(name="Calibri", size=9, bold=True, color=color)
+        ws5[celda_inicio].alignment = centro
+
+    # Tabla de reglas del puntaje (filas 3 a 19)
+    ws5.merge_cells("A3:T3")
+    ws5["A3"] = "CÓMO SE CALCULA EL PUNTAJE"
+    ws5["A3"].fill = PatternFill("solid", fgColor="2E2E2E")
+    ws5["A3"].font = Font(name="Calibri", size=10, bold=True, color="FFFFFF")
+    ws5["A3"].alignment = centro
+
+    reglas_headers = ["Concepto", "Efecto por unidad", "Ejemplo"]
+    for col, h in enumerate(reglas_headers, 1):
+        cell = ws5.cell(row=4, column=col, value=h)
+        cell.font = Font(name="Calibri", size=9, bold=True)
+        cell.border = borde
+
+    reglas = [
+        ("Base", "+100", "fijo"),
+        ("Día trabajado", "+1", "20 días = +20"),
+        ("Falta", "−10", "1 falta = −10"),
+        ("Tardanza", "−2", "1 tardanza = −2"),
+        ("Horas extra", "+0.5", "4 horas = +2"),
+        ("Sábado asistido", "+2", "por trabajador"),
+        ("Domingo asistido", "+3", "por trabajador"),
+        ("Conducta 🚨", "−3", ""),
+        ("Disciplina ⏰", "−4", ""),
+        ("Productividad 📦", "−5", ""),
+        ("Seguridad SSOMA ⚠️", "−8", "la más grave"),
+        ("Calidad Operativa 📋", "−6", ""),
+        ("Trabajo Equipo 🤝", "−3", ""),
+        ("Permisos 📄", "−1", "resta, no suma"),
+        ("Bono Positiva ⭐", "+5 si ≥1, sino +2", "bono base"),
+    ]
+    for idx, (concepto, efecto, ejemplo) in enumerate(reglas):
+        fila = 5 + idx
+        ws5.cell(row=fila, column=1, value=concepto).border = borde
+        ws5.cell(row=fila, column=2, value=efecto).border = borde
+        ws5.cell(row=fila, column=3, value=ejemplo).border = borde
 
     headers5 = ["Ranking", "Nombre", "Condición", "Área", "Días Trabajados", "Faltas", "Tardanzas",
                 "Horas Extra", "Sábados", "Domingos", "Conducta", "Disciplina", "Productividad",
                 "Seguridad SSOMA", "Calidad Operativa", "Trabajo Equipo", "Permisos",
                 "Obs. Positivas", "Puntaje", "Nivel"]
     for col, h in enumerate(headers5, 1):
-        cell = ws5.cell(row=3, column=col, value=h)
+        cell = ws5.cell(row=21, column=col, value=h)
         cell.fill = COLOR_HDR2
         cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
         cell.alignment = centro
@@ -3990,7 +4035,7 @@ def generar_mensual_formato():
     }
 
     for i, r in enumerate(resumen_data, 1):
-        row = 3 + i
+        row = 21 + i
         ws5.row_dimensions[row].height = 14
         fill_row = colores_nivel.get(r["nivel"], PatternFill("solid", fgColor="FFFFFF"))
 
@@ -4019,7 +4064,7 @@ def generar_mensual_formato():
                 cell.font = Font(name="Calibri", size=9, bold=(col == 19))
             cell.fill = fill_row
 
-    ws5.freeze_panes = "A4"
+    ws5.freeze_panes = "A22"
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
