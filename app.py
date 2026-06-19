@@ -3841,8 +3841,6 @@ def generar_mensual_formato():
     # ============================
     # PESTAÑA 5 - RESUMEN GENERAL
     # ============================
-    dias_laborables = [f for f in fechas if f not in FERIADOS]
-    # quitar sabados/domingos de dias_laborables tambien
     dias_laborables_real = []
     for d in range(dias_mes):
         fecha_obj_d = fi + timedelta(days=d)
@@ -3853,6 +3851,12 @@ def generar_mensual_formato():
 
     sabados_count = sum(1 for d in range(dias_mes) if (fi + timedelta(days=d)).weekday() == 5)
     domingos_count = sum(1 for d in range(dias_mes) if (fi + timedelta(days=d)).weekday() == 6)
+
+    # Observaciones del período
+    observaciones_periodo = Observacion.query.filter(Observacion.fecha.in_(fechas)).all()
+    obs_por_codigo = defaultdict(lambda: defaultdict(int))
+    for o in observaciones_periodo:
+        obs_por_codigo[o.codigo][o.categoria] += 1
 
     resumen_data = []
     for t in trabajadores:
@@ -3865,10 +3869,6 @@ def generar_mensual_formato():
         dias_trab = 0
         faltas_t = 0
         tardanzas_t = 0
-        for fecha, fecha_iso in zip(dias_laborables_real, [f for f in fechas_iso if f"{f[8:10]}/{f[5:7]}/{f[0:4]}" in dias_laborables_real]):
-            pass
-
-        # Recalcular de forma simple usando fechas y fechas_iso completos
         for fecha, fecha_iso in zip(fechas, fechas_iso):
             fecha_obj_d = datetime.strptime(fecha, "%d/%m/%Y")
             if fecha_obj_d.weekday() >= 5 or fecha in FERIADOS:
@@ -3883,37 +3883,79 @@ def generar_mensual_formato():
                 faltas_t += 1
 
         horas_t = sum(horas_registros.get((t.codigo, f), 0) for f in fechas)
-        porc_asist_ind = round((dias_trab / total_laborables * 100), 1) if total_laborables > 0 else 0
 
-        # Puntaje de desempeño (entre 0 y 100 aprox):
-        # Base = % asistencia. Penaliza tardanzas y faltas.
-        score = porc_asist_ind - (tardanzas_t * 3) - (faltas_t * 2)
-        score = max(0, round(score, 1))
+        conducta = obs_por_codigo[t.codigo].get("🚨 Conducta", 0)
+        disciplina = obs_por_codigo[t.codigo].get("⏰ Disciplina y Asistencia", 0)
+        productividad = obs_por_codigo[t.codigo].get("📦 Productividad", 0)
+        seguridad = obs_por_codigo[t.codigo].get("⚠️ Seguridad (SSOMA)", 0)
+        calidad = obs_por_codigo[t.codigo].get("📋 Calidad Operativa", 0)
+        equipo = obs_por_codigo[t.codigo].get("🤝 Trabajo en Equipo", 0)
+        permisos = obs_por_codigo[t.codigo].get("📄 Permisos", 0)
+        positivas = obs_por_codigo[t.codigo].get("⭐ Observaciones Positivas", 0)
+
+        bono_positivo = 5 if positivas >= 1 else 2
+
+        puntaje = (
+            100
+            + (dias_trab * 1)
+            - (faltas_t * 10)
+            - (tardanzas_t * 2)
+            + (horas_t * 0.5)
+            + (sabados_count * 2)
+            + (domingos_count * 3)
+            - (conducta * 3)
+            - (disciplina * 4)
+            - (productividad * 5)
+            - (seguridad * 8)
+            - (calidad * 6)
+            - (equipo * 3)
+            + (permisos * 0.5)
+            + bono_positivo
+        )
+        puntaje = round(puntaje, 1)
+
+        if puntaje >= 120:
+            nivel = "🟢 Excelente"
+        elif puntaje >= 100:
+            nivel = "🔵 Muy Bueno"
+        elif puntaje >= 80:
+            nivel = "🟡 Bueno"
+        elif puntaje >= 60:
+            nivel = "🟠 Regular"
+        else:
+            nivel = "🔴 Crítico"
+
+        porc_asist_ind = round((dias_trab / total_laborables * 100), 1) if total_laborables > 0 else 0
 
         resumen_data.append({
             "nombre": t.nombre, "condicion": t.condicion, "area": t.area,
             "dias_trab": dias_trab, "faltas": faltas_t, "tardanzas": tardanzas_t,
-            "horas": horas_t, "porc_asist": porc_asist_ind, "score": score
+            "horas": horas_t, "conducta": conducta, "disciplina": disciplina,
+            "productividad": productividad, "seguridad": seguridad, "calidad": calidad,
+            "equipo": equipo, "permisos": permisos, "positivas": positivas,
+            "puntaje": puntaje, "nivel": nivel, "porc_asist": porc_asist_ind
         })
 
-    # Ordenar de mejor a peor desempeño
-    resumen_data.sort(key=lambda x: x["score"], reverse=True)
+    # Ordenar: primero por puntaje descendente (agrupa automaticamente por nivel)
+    resumen_data.sort(key=lambda x: x["puntaje"], reverse=True)
 
     ws5 = wb.create_sheet(title=f"Resumen {mes_nombre} {año}")
 
-    ws5.merge_cells("A1:L1")
-    ws5["A1"] = f"RESUMEN GENERAL — {mes_nombre} {año}  |  Ranking de desempeño"
+    ws5.merge_cells("A1:S1")
+    ws5["A1"] = f"RESUMEN GENERAL — {mes_nombre} {año}  |  Ranking de Desempeño"
     ws5["A1"].fill = PatternFill("solid", fgColor="1F3864")
     ws5["A1"].font = Font(name="Calibri", size=12, bold=True, color="FFFFFF")
     ws5["A1"].alignment = centro
 
-    ws5.merge_cells("A2:L2")
-    ws5["A2"] = f"Días laborables del período: {total_laborables}  |  Sábados: {sabados_count}  |  Domingos: {domingos_count}  |  Puntaje = %Asistencia − (Tardanzas×3) − (Faltas×2)"
+    ws5.merge_cells("A2:S2")
+    ws5["A2"] = "🟢 Excelente ≥120  |  🔵 Muy Bueno 100-119  |  🟡 Bueno 80-99  |  🟠 Regular 60-79  |  🔴 Crítico <60"
     ws5["A2"].font = Font(name="Calibri", size=8, italic=True)
     ws5["A2"].alignment = centro
 
     headers5 = ["Ranking", "Nombre", "Condición", "Área", "Días Trabajados", "Faltas", "Tardanzas",
-                "Horas Extra", "Sábados", "Domingos", "% Asistencia", "Puntaje"]
+                "Horas Extra", "Sábados", "Domingos", "Conducta", "Disciplina", "Productividad",
+                "Seguridad SSOMA", "Calidad Operativa", "Trabajo Equipo", "Permisos",
+                "Obs. Positivas", "Puntaje", "Nivel"]
     for col, h in enumerate(headers5, 1):
         cell = ws5.cell(row=3, column=col, value=h)
         cell.fill = COLOR_HDR2
@@ -3921,53 +3963,41 @@ def generar_mensual_formato():
         cell.alignment = centro
         cell.border = borde
 
-    anchos5 = [8, 32, 11, 12, 14, 8, 10, 11, 9, 9, 12, 9]
+    anchos5 = [8, 30, 11, 12, 10, 7, 9, 10, 8, 8, 9, 9, 11, 12, 12, 11, 9, 11, 9, 13]
     for idx, w in enumerate(anchos5, 1):
         ws5.column_dimensions[get_column_letter(idx)].width = w
 
-    COLOR_TOP = PatternFill("solid", fgColor="C6EFCE")
-    COLOR_MED = PatternFill("solid", fgColor="FFEB9C")
-    COLOR_BAJO = PatternFill("solid", fgColor="FFC7CE")
+    COLOR_EXCELENTE = PatternFill("solid", fgColor="A9D08E")
+    COLOR_MUYBUENO  = PatternFill("solid", fgColor="BDD7EE")
+    COLOR_BUENO     = PatternFill("solid", fgColor="FFE699")
+    COLOR_REGULAR   = PatternFill("solid", fgColor="F8CBAD")
+    COLOR_CRITICO   = PatternFill("solid", fgColor="FF9999")
 
-    total_faltas_gen = 0
-    total_tard_gen = 0
-    total_horas_gen = 0
+    colores_nivel = {
+        "🟢 Excelente": COLOR_EXCELENTE,
+        "🔵 Muy Bueno": COLOR_MUYBUENO,
+        "🟡 Bueno": COLOR_BUENO,
+        "🟠 Regular": COLOR_REGULAR,
+        "🔴 Crítico": COLOR_CRITICO
+    }
 
     for i, r in enumerate(resumen_data, 1):
         row = 3 + i
         ws5.row_dimensions[row].height = 14
-
-        if r["score"] >= 90:
-            fill_row = COLOR_TOP
-        elif r["score"] >= 70:
-            fill_row = COLOR_MED
-        else:
-            fill_row = COLOR_BAJO
+        fill_row = colores_nivel.get(r["nivel"], PatternFill("solid", fgColor="FFFFFF"))
 
         valores = [i, r["nombre"], r["condicion"], r["area"], r["dias_trab"], r["faltas"],
                    r["tardanzas"], r["horas"], sabados_count, domingos_count,
-                   f"{r['porc_asist']}%", r["score"]]
+                   r["conducta"], r["disciplina"], r["productividad"], r["seguridad"],
+                   r["calidad"], r["equipo"], r["permisos"], r["positivas"],
+                   r["puntaje"], r["nivel"]]
 
         for col, val in enumerate(valores, 1):
             cell = ws5.cell(row=row, column=col, value=val)
             cell.alignment = izq if col == 2 else centro
             cell.border = borde
-            cell.font = Font(name="Calibri", size=9, bold=(col == 12))
+            cell.font = Font(name="Calibri", size=9, bold=(col in [19, 20]))
             cell.fill = fill_row
-
-        total_faltas_gen += r["faltas"]
-        total_tard_gen += r["tardanzas"]
-        total_horas_gen += r["horas"]
-
-    # Fila de totales
-    row_total = 3 + len(resumen_data) + 1
-    ws5.cell(row=row_total, column=2, value="TOTALES").font = Font(name="Calibri", size=9, bold=True)
-    ws5.cell(row=row_total, column=6, value=total_faltas_gen).font = Font(name="Calibri", size=9, bold=True)
-    ws5.cell(row=row_total, column=7, value=total_tard_gen).font = Font(name="Calibri", size=9, bold=True)
-    ws5.cell(row=row_total, column=8, value=total_horas_gen).font = Font(name="Calibri", size=9, bold=True)
-    for col in [2, 6, 7, 8]:
-        ws5.cell(row=row_total, column=col).fill = PatternFill("solid", fgColor="D9D9D9")
-        ws5.cell(row=row_total, column=col).border = borde
 
     ws5.freeze_panes = "A4"
     output = io.BytesIO()
