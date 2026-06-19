@@ -48,6 +48,17 @@ class Asistencia(db.Model):
     tipo = db.Column(db.String(30))
     escaneado_por = db.Column(db.String(50))  # NUEVO
 
+class Observacion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(20))
+    nombre = db.Column(db.String(200))
+    area = db.Column(db.String(50))
+    categoria = db.Column(db.String(50))
+    observacion = db.Column(db.String(200))
+    tipo = db.Column(db.String(20))  # "NEGATIVA" o "POSITIVA"
+    fecha = db.Column(db.String(20))
+    registrado_por = db.Column(db.String(50))
+
 class Configuracion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dotacion_programada = db.Column(db.Integer, default=36)
@@ -498,6 +509,7 @@ body {{ font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,#0a
   <a href="/trabajadores" class="btn"><span class="btn-icon" style="background:#7c3aed;">👥</span>Trabajadores</a>
   <a href="/reporte_movimientos" class="btn"><span class="btn-icon" style="background:#2563eb;">🔄</span>Movimientos</a>
   <a href="/exportar_mensual_formato" class="btn"><span class="btn-icon" style="background:#16a34a;">📊</span>Control Mensual</a>
+  <a href="/observaciones" class="btn"><span class="btn-icon" style="background:#db2777;">📝</span>Observaciones</a>
 </div>
 
 </body>
@@ -679,6 +691,7 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
         <a href="/trabajadores" class="btn"><div class="btn-icon" style="background:#7c3aed;">👥</div>Trabajadores</a>
         <a href="/reporte_movimientos" class="btn"><div class="btn-icon" style="background:#2563eb;">🔄</div>Movimientos Personal</a>
         <a href="/exportar_mensual_formato" class="btn"><div class="btn-icon" style="background:#16a34a;">📊</div>Control Mensual Excel</a>
+        <a href="/observaciones" class="btn"><div class="btn-icon" style="background:#db2777;">📝</div>Observaciones del Personal</a>
       </div>
     </div>
   </div>
@@ -1072,6 +1085,174 @@ td a {{ text-decoration:none; font-weight:700; font-size:11px; padding:5px 10px;
 </html>
 """
     return html
+
+@app.route("/observaciones")
+def observaciones():
+    trabajadores = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.area, Trabajador.nombre).all()
+
+    opciones_trabajador = ""
+    for t in trabajadores:
+        opciones_trabajador += f'<option value="{t.codigo}|{t.nombre}|{t.area}">{t.nombre} — {t.area}</option>'
+
+    categorias = {
+        "🚨 Conducta": [
+            "Conversa constantemente durante la jornada", "Uso indebido de celular",
+            "Uso de audífonos durante la jornada", "Actitud inapropiada hacia compañeros",
+            "Actitud inapropiada hacia supervisores", "Genera conflictos con el equipo",
+            "Lenguaje inapropiado", "Falta de compromiso con las actividades asignadas",
+            "Se niega a realizar tareas asignadas"
+        ],
+        "⏰ Disciplina y Asistencia": [
+            "Llega tarde a su puesto de trabajo", "Retorno tardío de refrigerio",
+            "Abandona su puesto sin autorización", "Salida anticipada sin autorización",
+            "Ausencia injustificada parcial", "Incumplimiento de horario laboral"
+        ],
+        "📦 Productividad": [
+            "Bajo rendimiento operativo", "No cumple metas de producción",
+            "Exceso de tiempos muertos", "Retrasos en actividades asignadas",
+            "Baja productividad respecto al promedio del área", "Falta de seguimiento de tareas"
+        ],
+        "⚠️ Seguridad (SSOMA)": [
+            "Incumplimiento de normas de seguridad", "No utiliza EPP completo",
+            "Uso incorrecto de EPP", "Manipulación insegura de carga",
+            "Genera condición insegura", "No reporta actos inseguros observados"
+        ],
+        "📋 Calidad Operativa": [
+            "Error en picking", "Error en packing", "Error en etiquetado",
+            "Error en inventario", "Error en despacho", "No sigue procedimientos operativos",
+            "Omisión de controles establecidos", "Genera reprocesos operativos"
+        ],
+        "🤝 Trabajo en Equipo": [
+            "Falta de colaboración con el equipo", "Resistencia al cambio",
+            "Falta de comunicación efectiva", "No apoya en actividades críticas",
+            "Incumple indicaciones del líder o supervisor"
+        ],
+        "⭐ Observaciones Positivas": [
+            "Apoyo destacado al equipo", "Excelente productividad",
+            "Cumplimiento ejemplar de normas de seguridad", "Iniciativa para resolver problemas",
+            "Puntualidad destacada", "Compromiso sobresaliente",
+            "Propuesta de mejora implementada", "Excelente actitud laboral"
+        ]
+    }
+
+    bloques_categorias = ""
+    for cat, items in categorias.items():
+        tipo = "POSITIVA" if "Positivas" in cat else "NEGATIVA"
+        bloques_categorias += f'<div class="cat-block"><div class="cat-title">{cat}</div>'
+        for item in items:
+            bloques_categorias += f'''
+            <label class="check-item">
+                <input type="checkbox" name="observaciones" value="{item}|{cat}|{tipo}">
+                <span>{item}</span>
+            </label>
+            '''
+        bloques_categorias += '</div>'
+
+    return f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observaciones del Personal</title>
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:'Segoe UI',sans-serif; background:#0f172a; color:#fff; padding:16px; }}
+.container {{ max-width:700px; margin:0 auto; }}
+h2 {{ font-size:18px; margin-bottom:16px; }}
+.card {{ background:#1e293b; border-radius:12px; padding:20px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.08); }}
+label.field-label {{ display:block; font-size:11px; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:6px; }}
+select {{ width:100%; padding:12px; background:#0f172a; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:14px; margin-bottom:16px; }}
+.cat-block {{ margin-bottom:14px; }}
+.cat-title {{ font-size:13px; font-weight:700; color:#60a5fa; margin-bottom:8px; }}
+.check-item {{ display:flex; align-items:center; gap:8px; padding:6px 0; font-size:13px; color:#e2e8f0; cursor:pointer; }}
+.check-item input {{ width:16px; height:16px; }}
+button {{ width:100%; padding:14px; background:linear-gradient(90deg,#1a56db,#3b82f6); border:none; border-radius:8px; color:#fff; font-size:15px; font-weight:700; cursor:pointer; margin-top:10px; }}
+a.volver {{ display:block; text-align:center; color:#64748b; font-size:12px; margin-top:14px; text-decoration:none; }}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>📝 OBSERVACIONES DEL PERSONAL</h2>
+
+  <form action="/registrar_observacion" method="post">
+    <div class="card">
+      <label class="field-label">Trabajador</label>
+      <select name="trabajador" required>
+        <option value="">-- Selecciona un trabajador --</option>
+        {opciones_trabajador}
+      </select>
+    </div>
+
+    <div class="card">
+      <label class="field-label">Selecciona una o varias observaciones</label>
+      {bloques_categorias}
+    </div>
+
+    <button type="submit">💾 GUARDAR OBSERVACIÓN</button>
+  </form>
+  <a href="/dashboard" class="volver">← Volver al Dashboard</a>
+</div>
+</body>
+</html>
+    """
+
+@app.route("/registrar_observacion", methods=["POST"])
+def registrar_observacion():
+    from datetime import date
+
+    trabajador_data = request.form.get("trabajador")
+    observaciones_marcadas = request.form.getlist("observaciones")
+
+    if not trabajador_data or not observaciones_marcadas:
+        return """
+        <h2>⚠️ Debes seleccionar un trabajador y al menos una observación.</h2>
+        <a href="/observaciones">← Volver</a>
+        """
+
+    codigo, nombre, area = trabajador_data.split("|")
+    hoy = date.today().strftime("%d/%m/%Y")
+    usuario_actual = session.get("usuario", "SISTEMA")
+
+    for obs in observaciones_marcadas:
+        texto, categoria, tipo = obs.split("|")
+        nueva = Observacion(
+            codigo=codigo,
+            nombre=nombre,
+            area=area,
+            categoria=categoria,
+            observacion=texto,
+            tipo=tipo,
+            fecha=hoy,
+            registrado_por=usuario_actual
+        )
+        db.session.add(nueva)
+
+    db.session.commit()
+
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <style>
+    body {{ font-family:'Segoe UI',sans-serif; background:#0f172a; color:#fff; display:flex; align-items:center; justify-content:center; height:100vh; }}
+    .card {{ background:#1e293b; border-radius:16px; padding:32px; text-align:center; max-width:380px; }}
+    h2 {{ color:#4ade80; margin-bottom:10px; }}
+    p {{ color:#94a3b8; font-size:13px; margin-bottom:20px; }}
+    a {{ display:inline-block; padding:12px 20px; background:#3b82f6; color:#fff; border-radius:8px; text-decoration:none; margin:0 6px; font-size:13px; }}
+    </style>
+    </head>
+    <body>
+    <div class="card">
+        <h2>✅ Observación guardada</h2>
+        <p>{nombre} — {len(observaciones_marcadas)} observación(es) registrada(s)</p>
+        <a href="/observaciones">➕ Nueva</a>
+        <a href="/dashboard">⬅ Dashboard</a>
+    </div>
+    </body>
+    </html>
+    """
 
 # =========================
 # INICIO
