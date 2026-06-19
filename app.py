@@ -8,6 +8,7 @@ import openpyxl
 import io
 from flask import send_file
 from flask import session
+from collections import defaultdict
 
 LIMA = pytz.timezone("America/Lima")
 
