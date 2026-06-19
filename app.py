@@ -1090,9 +1090,14 @@ td a {{ text-decoration:none; font-weight:700; font-size:11px; padding:5px 10px;
 def observaciones():
     trabajadores = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.area, Trabajador.nombre).all()
 
-    opciones_trabajador = ""
+    areas_unicas = sorted(set(t.area for t in trabajadores))
+    opciones_area = '<option value="">-- Selecciona un área --</option>'
+    for a in areas_unicas:
+        opciones_area += f'<option value="{a}">{a}</option>'
+
+    opciones_trabajador = '<option value="">-- Primero selecciona un área --</option>'
     for t in trabajadores:
-        opciones_trabajador += f'<option value="{t.codigo}|{t.nombre}|{t.area}">{t.nombre} — {t.area}</option>'
+        opciones_trabajador += f'<option value="{t.codigo}|{t.nombre}|{t.area}" data-area="{t.area}">{t.nombre}</option>'
 
     categorias = {
         "🚨 Conducta": [
@@ -1177,9 +1182,13 @@ a.volver {{ display:block; text-align:center; color:#64748b; font-size:12px; mar
 
   <form action="/registrar_observacion" method="post">
     <div class="card">
+      <label class="field-label">Área</label>
+      <select id="selectArea" onchange="filtrarTrabajadores()">
+        {opciones_area}
+      </select>
+
       <label class="field-label">Trabajador</label>
-      <select name="trabajador" required>
-        <option value="">-- Selecciona un trabajador --</option>
+      <select name="trabajador" id="selectTrabajador" required>
         {opciones_trabajador}
       </select>
     </div>
@@ -1193,6 +1202,25 @@ a.volver {{ display:block; text-align:center; color:#64748b; font-size:12px; mar
   </form>
   <a href="/dashboard" class="volver">← Volver al Dashboard</a>
 </div>
+
+<script>
+function filtrarTrabajadores() {{
+    var area = document.getElementById("selectArea").value;
+    var select = document.getElementById("selectTrabajador");
+    var opciones = select.querySelectorAll("option");
+    select.value = "";
+    opciones.forEach(function(op) {{
+        if (op.value === "") {{
+            op.style.display = "block";
+        }} else if (op.getAttribute("data-area") === area) {{
+            op.style.display = "block";
+        }} else {{
+            op.style.display = "none";
+        }}
+    }});
+}}
+</script>
+
 </body>
 </html>
     """
