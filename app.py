@@ -3969,48 +3969,18 @@ def generar_mensual_formato():
         ws5[celda_inicio].font = Font(name="Calibri", size=9, bold=True, color=color)
         ws5[celda_inicio].alignment = centro
 
-    # Tabla de reglas del puntaje (filas 3 a 19)
+    # Regla de puntaje en una sola fila compacta
     ws5.merge_cells("A3:T3")
-    ws5["A3"] = "CÓMO SE CALCULA EL PUNTAJE"
-    ws5["A3"].fill = PatternFill("solid", fgColor="2E2E2E")
-    ws5["A3"].font = Font(name="Calibri", size=10, bold=True, color="FFFFFF")
+    ws5["A3"] = "Base +100 | Día trab. +1 | Falta −10 | Tardanza −2 | H.Extra +0.5 | Sábado +2 | Domingo +3 | Conducta −3 | Disciplina −4 | Productividad −5 | Seguridad −8 | Calidad −6 | Equipo −3 | Permisos −1 | Bono +5 si ≥1, sino +2"
+    ws5["A3"].font = Font(name="Calibri", size=7, italic=True)
     ws5["A3"].alignment = centro
-
-    reglas_headers = ["Concepto", "Efecto por unidad", "Ejemplo"]
-    for col, h in enumerate(reglas_headers, 1):
-        cell = ws5.cell(row=4, column=col, value=h)
-        cell.font = Font(name="Calibri", size=9, bold=True)
-        cell.border = borde
-
-    reglas = [
-        ("Base", "+100", "fijo"),
-        ("Día trabajado", "+1", "20 días = +20"),
-        ("Falta", "−10", "1 falta = −10"),
-        ("Tardanza", "−2", "1 tardanza = −2"),
-        ("Horas extra", "+0.5", "4 horas = +2"),
-        ("Sábado asistido", "+2", "por trabajador"),
-        ("Domingo asistido", "+3", "por trabajador"),
-        ("Conducta 🚨", "−3", ""),
-        ("Disciplina ⏰", "−4", ""),
-        ("Productividad 📦", "−5", ""),
-        ("Seguridad SSOMA ⚠️", "−8", "la más grave"),
-        ("Calidad Operativa 📋", "−6", ""),
-        ("Trabajo Equipo 🤝", "−3", ""),
-        ("Permisos 📄", "−1", "resta, no suma"),
-        ("Bono Positiva ⭐", "+5 si ≥1, sino +2", "bono base"),
-    ]
-    for idx, (concepto, efecto, ejemplo) in enumerate(reglas):
-        fila = 5 + idx
-        ws5.cell(row=fila, column=1, value=concepto).border = borde
-        ws5.cell(row=fila, column=2, value=efecto).border = borde
-        ws5.cell(row=fila, column=3, value=ejemplo).border = borde
 
     headers5 = ["Ranking", "Nombre", "Condición", "Área", "Días Trabajados", "Faltas", "Tardanzas",
                 "Horas Extra", "Sábados", "Domingos", "Conducta", "Disciplina", "Productividad",
                 "Seguridad SSOMA", "Calidad Operativa", "Trabajo Equipo", "Permisos",
                 "Obs. Positivas", "Puntaje", "Nivel"]
     for col, h in enumerate(headers5, 1):
-        cell = ws5.cell(row=21, column=col, value=h)
+        cell = ws5.cell(row=4, column=col, value=h)
         cell.fill = COLOR_HDR2
         cell.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
         cell.alignment = centro
@@ -4035,7 +4005,7 @@ def generar_mensual_formato():
     }
 
     for i, r in enumerate(resumen_data, 1):
-        row = 21 + i
+        row = 4 + i
         ws5.row_dimensions[row].height = 14
         fill_row = colores_nivel.get(r["nivel"], PatternFill("solid", fgColor="FFFFFF"))
 
@@ -4064,7 +4034,7 @@ def generar_mensual_formato():
                 cell.font = Font(name="Calibri", size=9, bold=(col == 19))
             cell.fill = fill_row
 
-    ws5.freeze_panes = "A22"
+    ws5.freeze_panes = "A5"
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
