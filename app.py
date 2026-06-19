@@ -3972,7 +3972,7 @@ def generar_mensual_formato():
     # Regla de puntaje en una sola fila compacta
     ws5.merge_cells("A3:T3")
     ws5["A3"] = "Base +100 | Día trab. +1 | Falta −10 | Tardanza −2 | H.Extra +0.5 | Sábado +2 | Domingo +3 | Conducta −3 | Disciplina −4 | Productividad −5 | Seguridad −8 | Calidad −6 | Equipo −3 | Permisos −1 | Bono +5 si ≥1, sino +2"
-    ws5["A3"].font = Font(name="Calibri", size=7, italic=True)
+    ws5["A3"].font = Font(name="Calibri", size=10, italic=True)
     ws5["A3"].alignment = centro
 
     headers5 = ["Ranking", "Nombre", "Condición", "Área", "Días Trabajados", "Faltas", "Tardanzas",
