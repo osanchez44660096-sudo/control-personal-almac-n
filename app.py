@@ -3916,7 +3916,7 @@ def generar_mensual_formato():
             - (seguridad * 8)
             - (calidad * 6)
             - (equipo * 3)
-            + (permisos * 0.5)
+            - (permisos * 1)
             + bono_positivo
         )
         puntaje = round(puntaje, 1)
@@ -4000,11 +4000,23 @@ def generar_mensual_formato():
                    r["calidad"], r["equipo"], r["permisos"], r["positivas"],
                    r["puntaje"], r["nivel"]]
 
+        colores_texto_nivel = {
+            "🟢 Excelente": "006100",
+            "🔵 Muy Bueno": "1F4E78",
+            "🟡 Bueno": "7F6000",
+            "🟠 Regular": "974706",
+            "🔴 Crítico": "9C0006"
+        }
+        color_texto = colores_texto_nivel.get(r["nivel"], "000000")
+
         for col, val in enumerate(valores, 1):
             cell = ws5.cell(row=row, column=col, value=val)
             cell.alignment = izq if col == 2 else centro
             cell.border = borde
-            cell.font = Font(name="Calibri", size=9, bold=(col in [19, 20]))
+            if col == 20:
+                cell.font = Font(name="Calibri", size=10, bold=True, color=color_texto)
+            else:
+                cell.font = Font(name="Calibri", size=9, bold=(col == 19))
             cell.fill = fill_row
 
     ws5.freeze_panes = "A4"
