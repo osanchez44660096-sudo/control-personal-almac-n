@@ -688,7 +688,7 @@ html, body {{ height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; 
         <a href="/incidencias" class="btn"><div class="btn-icon" style="background:#9333ea;">🏥</div>Incidencias{"<span class='badge'>" + str(incidencias_activas) + "</span>" if incidencias_activas > 0 else ""}</a>
         <a href="/reporte_incidencias" class="btn"><div class="btn-icon" style="background:#475569;">📋</div>Reporte Incidencias</a>
       </div>
-      <div class="menu-row cols-3">
+      <div class="menu-row cols-4">
         <a href="/trabajadores" class="btn"><div class="btn-icon" style="background:#7c3aed;">👥</div>Trabajadores</a>
         <a href="/reporte_movimientos" class="btn"><div class="btn-icon" style="background:#2563eb;">🔄</div>Movimientos Personal</a>
         <a href="/exportar_mensual_formato" class="btn"><div class="btn-icon" style="background:#16a34a;">📊</div>Control Mensual Excel</a>
