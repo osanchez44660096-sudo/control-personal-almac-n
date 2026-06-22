@@ -4102,7 +4102,7 @@ def generar_mensual_formato():
                 cell.font = Font(name="Calibri", size=9, bold=(col == 19))
             cell.fill = fill_row
 
-    ws5.freeze_panes = "A5"
+    ws5.freeze_panes = "E5"
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
