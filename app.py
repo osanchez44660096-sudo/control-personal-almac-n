@@ -920,6 +920,7 @@ def nuevo_trabajador():
             <option>FIJO</option>
             <option>DOTACION</option>
             <option>CAMPAÑA</option>
+            <option>INTERMITENTE</option>
         </select>
 
         <br><br>
@@ -3298,7 +3299,7 @@ def generar_mensual_formato():
         actual += timedelta(days=1)
 
     # Trabajadores ordenados por condición laboral luego nombre
-    orden_condicion = {"FIJO": 1, "DOTACION": 2, "CAMPAÑA": 3}
+    orden_condicion = {"FIJO": 1, "DOTACION": 2, "CAMPAÑA": 3, "INTERMITENTE": 4}
     trabajadores = Trabajador.query.filter_by(estado="ACTIVO").order_by(Trabajador.condicion, Trabajador.nombre).all()
 
     # Registros del mes
@@ -4141,6 +4142,7 @@ def editar(id):
         <option {'selected' if t.condicion=='FIJO' else ''}>FIJO</option>
         <option {'selected' if t.condicion=='DOTACION' else ''}>DOTACION</option>
         <option {'selected' if t.condicion=='CAMPAÑA' else ''}>CAMPAÑA</option>
+        <option {'selected' if t.condicion=='INTERMITENTE' else ''}>INTERMITENTE</option>
     </select><br><br>
     Área:<br>
     <select name="area">
