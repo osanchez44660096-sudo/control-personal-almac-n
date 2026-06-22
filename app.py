@@ -1212,6 +1212,7 @@ a.volver {{ display:block; text-align:center; color:#64748b; font-size:12px; mar
 
     <button type="submit">💾 GUARDAR OBSERVACIÓN</button>
   </form>
+  <a href="/exportar_observaciones" class="volver">📥 Exportar Excel</a>
   <a href="/dashboard" class="volver">← Volver al Dashboard</a>
 </div>
 
@@ -1293,6 +1294,63 @@ def registrar_observacion():
     </body>
     </html>
     """
+
+@app.route("/exportar_observaciones", methods=["GET", "POST"])
+def exportar_observaciones():
+    if request.method == "GET":
+        return """
+        <!DOCTYPE html>
+        <html><head><meta charset="UTF-8">
+        <style>
+        body { font-family:'Segoe UI',sans-serif; background:#0f172a; color:#fff; display:flex; align-items:center; justify-content:center; height:100vh; }
+        .card { background:#1e293b; border-radius:16px; padding:32px; max-width:380px; }
+        label { display:block; margin:10px 0 4px; color:#94a3b8; font-size:13px; }
+        input[type=date] { width:100%; padding:8px; border-radius:6px; border:none; }
+        button { margin-top:20px; padding:12px 20px; background:#10b981; color:#fff; border:none; border-radius:8px; width:100%; font-size:14px; cursor:pointer; }
+        a { display:inline-block; margin-top:10px; color:#94a3b8; font-size:13px; text-decoration:none; }
+        </style></head>
+        <body>
+        <div class="card">
+        <h2>📥 Exportar Observaciones</h2>
+        <form method="POST">
+            <label>Desde</label>
+            <input type="date" name="desde" required>
+            <label>Hasta</label>
+            <input type="date" name="hasta" required>
+            <button type="submit">📊 Generar Excel</button>
+        </form>
+        <a href="/observaciones">← Volver</a>
+        </div>
+        </body></html>
+        """
+
+    desde = request.form["desde"]
+    hasta = request.form["hasta"]
+
+    obs = Observacion.query.filter(
+        Observacion.fecha >= desde,
+        Observacion.fecha <= hasta
+    ).order_by(Observacion.fecha, Observacion.nombre).all()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Observaciones"
+    headers = ["Fecha", "Área", "Trabajador", "Categoría", "Observación", "Supervisor", "Tipo"]
+    ws.append(headers)
+
+    for o in obs:
+        categoria_limpia = o.categoria.split(" ", 1)[-1] if " " in o.categoria else o.categoria
+        tipo_legible = "Positiva" if o.tipo == "POSITIVA" else "Negativa"
+        ws.append([o.fecha, o.area, o.nombre, categoria_limpia, o.observacion, o.registrado_por, tipo_legible])
+
+    for col in ws.columns:
+        max_len = max(len(str(c.value)) for c in col if c.value)
+        ws.column_dimensions[col[0].column_letter].width = max_len + 3
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    return send_file(output, download_name=f"observaciones_{desde}_a_{hasta}.xlsx", as_attachment=True)
 
 # =========================
 # INICIO
@@ -3292,6 +3350,7 @@ def generar_mensual_formato():
 
     fechas = []
     fechas_iso = []
+    
     actual = fi
     while actual <= ff:
         fechas.append(actual.strftime("%d/%m/%Y"))
