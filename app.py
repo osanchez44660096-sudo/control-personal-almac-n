@@ -1332,7 +1332,7 @@ def exportar_observaciones():
         Observacion.fecha <= hasta
     ).order_by(Observacion.fecha, Observacion.nombre).all()
 
-    wb = Workbook()
+    wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Observaciones"
     headers = ["Fecha", "Área", "Trabajador", "Categoría", "Observación", "Supervisor", "Tipo"]
