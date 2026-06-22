@@ -1327,9 +1327,17 @@ def exportar_observaciones():
     desde = request.form["desde"]
     hasta = request.form["hasta"]
 
+    fi = datetime.strptime(desde, "%Y-%m-%d")
+    ff = datetime.strptime(hasta, "%Y-%m-%d")
+
+    fechas_rango = []
+    actual = fi
+    while actual <= ff:
+        fechas_rango.append(actual.strftime("%d/%m/%Y"))
+        actual += timedelta(days=1)
+
     obs = Observacion.query.filter(
-        Observacion.fecha >= desde,
-        Observacion.fecha <= hasta
+        Observacion.fecha.in_(fechas_rango)
     ).order_by(Observacion.fecha, Observacion.nombre).all()
 
     wb = openpyxl.Workbook()
