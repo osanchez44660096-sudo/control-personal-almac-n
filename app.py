@@ -1880,6 +1880,24 @@ def reporte_asistencia():
     """
     return html
 
+@app.route("/qr/<codigo>")
+def ver_qr(codigo):
+    trabajador = Trabajador.query.filter_by(codigo=codigo).first()
+    if not trabajador:
+        return "<h2>⚠️ Trabajador no encontrado</h2>", 404
+
+    qr = qrcode.make(codigo)
+    buf = io.BytesIO()
+    qr.save(buf, format="PNG")
+    buf.seek(0)
+
+    os.makedirs("static/qr", exist_ok=True)
+    ruta_qr = f"static/qr/{codigo}.png"
+    if not os.path.exists(ruta_qr):
+        qr.save(ruta_qr)
+
+    return send_file(buf, mimetype="image/png")
+
 @app.route("/generar_qr_todos")
 def generar_qr_todos():
 
