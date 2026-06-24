@@ -1020,7 +1020,6 @@ def trabajadores():
             <td style="color:{color_estado};font-weight:700;">{t.estado}</td>
             <td><a href="/editar/{t.id}" class="link-edit">EDITAR</a></td>
             <td><a href="/mover/{t.id}" class="link-move">MOVER</a></td>
-            <td><a href="/mover/{t.id}" class="link-move">MOVER</a></td>
             <td>{('<a href="/reactivar/' + str(t.id) + '" class="link-cesar" style="background:#16a34a;">REACTIVAR</a>') if t.estado == 'CESADO' else ('<a href="/cesar/' + str(t.id) + '" class="link-cesar">CESAR</a>')}</td>
         </tr>
         """
