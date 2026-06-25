@@ -9,6 +9,19 @@ import io
 from flask import send_file
 from flask import session
 from collections import defaultdict
+from functools import wraps
+
+def solo_admin(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("rol") != "ADMIN":
+            return """
+            <h2>⛔ ACCESO DENEGADO</h2>
+            <p>Solo el Administrador puede realizar esta acción.</p>
+            <a href="/trabajadores">VOLVER A LISTA</a>
+            """
+        return f(*args, **kwargs)
+    return decorated_function
 
 LIMA = pytz.timezone("America/Lima")
 
@@ -1431,6 +1444,7 @@ def guardar_movimiento(id):
 
 
 @app.route("/cesar/<int:id>")
+@solo_admin
 def cesar(id):
 
     trabajador = Trabajador.query.get(id)
@@ -1447,6 +1461,7 @@ def cesar(id):
     """
 
 @app.route("/reactivar/<int:id>")
+@solo_admin
 def reactivar(id):
 
     trabajador = Trabajador.query.get(id)
@@ -4225,6 +4240,7 @@ def exportar_trabajadores():
     output.seek(0)
     return send_file(output, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", as_attachment=True, download_name="trabajadores.xlsx")
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
+@solo_admin
 def editar(id):
     t = Trabajador.query.get(id)
     if request.method == "POST":
