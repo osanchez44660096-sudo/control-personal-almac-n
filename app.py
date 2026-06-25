@@ -23,6 +23,20 @@ def solo_admin(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def roles_permitidos(*roles):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if session.get("rol") not in roles:
+                return """
+                <h2>⛔ ACCESO DENEGADO</h2>
+                <p>No tienes permiso para realizar esta acción.</p>
+                <a href="/trabajadores">VOLVER A LISTA</a>
+                """
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 LIMA = pytz.timezone("America/Lima")
 
 def ahora_lima():
@@ -916,6 +930,7 @@ b {{ color:#fff; }}
 # =========================
 
 @app.route("/nuevo_trabajador")
+@roles_permitidos("ADMIN", "SUPERVISOR")
 def nuevo_trabajador():
 
     return """
@@ -960,6 +975,7 @@ def nuevo_trabajador():
     </form>
     """
 @app.route("/guardar_trabajador", methods=["POST"])
+@roles_permitidos("ADMIN", "SUPERVISOR")
 def guardar_trabajador():
 
     nombre = request.form["nombre"]
