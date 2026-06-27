@@ -2434,9 +2434,15 @@ def exportar_especiales_filtrado():
     ws.title = "Asistencias Especiales"
     ws.append([f"REPORTE ASISTENCIAS ESPECIALES {fi.strftime('%d/%m/%Y')} AL {ff.strftime('%d/%m/%Y')}"])
     ws.append([])
-    ws.append(["FECHA", "CODIGO", "NOMBRE", "TIPO", "SUPERVISOR"])
+    ws.append(["FECHA", "CODIGO", "NOMBRE", "TIPO", "NATURALEZA", "SUPERVISOR"])
     for r in registros:
-        ws.append([r.fecha, r.codigo, r.nombre, r.tipo, r.supervisor])
+        fecha_dt = datetime.strptime(r.fecha, "%d/%m/%Y")
+        dia_semana = fecha_dt.weekday()
+        if (dia_semana == 5 and r.tipo == "SABADO") or (dia_semana == 6 and r.tipo == "DOMINGO"):
+            naturaleza = "ASISTENCIA REAL"
+        else:
+            naturaleza = "COMPROMISO"
+        ws.append([r.fecha, r.codigo, r.nombre, r.tipo, naturaleza, r.supervisor])
 
     for col in ws.columns:
         max_len = max(len(str(cell.value or "")) for cell in col)
