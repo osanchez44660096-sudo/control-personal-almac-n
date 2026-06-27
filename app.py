@@ -2117,18 +2117,34 @@ html5QrCode.start(
 
 @app.route("/buscar_trabajador_especial", methods=["POST"])
 def buscar_trabajador_especial():
-
     codigo = request.form["codigo"]
-
     trabajador = Trabajador.query.filter_by(
         codigo=codigo
     ).first()
-
     if not trabajador:
         return """
         <h2>TRABAJADOR NO ENCONTRADO</h2>
         <a href="/asistencias_especiales">VOLVER</a>
         """
+
+    dia_semana = datetime.now().weekday()  # 0=Lunes ... 5=Sabado, 6=Domingo
+
+    if dia_semana == 5:
+        campo_tipo = '<input type="hidden" name="tipo" value="SABADO">'
+        etiqueta_tipo = '<div class="worker-area" style="margin-top:8px;background:#312e81;color:#a5b4fc;">SABADO (automatico)</div>'
+    elif dia_semana == 6:
+        campo_tipo = '<input type="hidden" name="tipo" value="DOMINGO">'
+        etiqueta_tipo = '<div class="worker-area" style="margin-top:8px;background:#312e81;color:#a5b4fc;">DOMINGO (automatico)</div>'
+    else:
+        campo_tipo = """
+    <label>Tipo</label>
+    <select name="tipo">
+        <option>SABADO</option>
+        <option>DOMINGO</option>
+        <option>INVENTARIO</option>
+        <option>APOYO</option>
+    </select>"""
+        etiqueta_tipo = ""
 
     return f"""
 <!DOCTYPE html>
@@ -2154,26 +2170,16 @@ a {{ display:block; text-align:center; color:#64748b; font-size:12px; margin-top
   <div class="worker">
     <div class="worker-name">{trabajador.nombre}</div>
     <div class="worker-area">{trabajador.area}</div>
+    {etiqueta_tipo}
   </div>
-
   <form action="/guardar_asistencia_especial" method="post">
     <input type="hidden" name="codigo" value="{trabajador.codigo}">
-
-    <label>Tipo</label>
-    <select name="tipo">
-        <option>SABADO</option>
-        <option>DOMINGO</option>
-        <option>FERIADO</option>
-        <option>INVENTARIO</option>
-        <option>APOYO</option>
-    </select>
-
+    {campo_tipo}
     <label>Supervisor</label>
     <input type="text" name="supervisor" value="{trabajador.supervisor}">
-
     <button type="submit">GUARDAR</button>
   </form>
-  <a href="/asistencias_especiales">← Volver</a>
+  <a href="/asistencias_especiales">← VOLVER</a>
 </div>
 </body>
 </html>
@@ -2182,6 +2188,7 @@ a {{ display:block; text-align:center; color:#64748b; font-size:12px; margin-top
 def guardar_asistencia_especial():
 
     codigo = request.form["codigo"]
+    tipo = request.form["tipo"]
 
     trabajador = Trabajador.query.filter_by(
         codigo=codigo
@@ -2189,7 +2196,12 @@ def guardar_asistencia_especial():
 
     hoy = datetime.now().strftime("%d/%m/%Y")
 
-    # Verificar si ya registró asistencia especial hoy
+    # Verificar si ya registró ESTE TIPO especifico hoy
+    ya_registro = AsistenciaEspecial.query.filter_by(
+        codigo=trabajador.codigo,
+        fecha=hoy,
+        tipo=tipo
+    ).first()
     ya_registro = AsistenciaEspecial.query.filter_by(
         codigo=trabajador.codigo,
         fecha=hoy
@@ -2218,7 +2230,7 @@ b {{ color:#fff; }}
   <div class="icon">⚠️</div>
   <h2>Ya registrado hoy</h2>
   <p><b>{trabajador.nombre}</b></p>
-  <p>Ya tiene asistencia especial registrada hoy.</p>
+  <p>Ya tiene <b>{tipo}</b> registrado hoy.</p>
   <a href="/asistencias_especiales" class="btn">SIGUIENTE</a>
 </div>
 </body>
@@ -2229,7 +2241,7 @@ b {{ color:#fff; }}
         fecha=hoy,
         codigo=trabajador.codigo,
         nombre=trabajador.nombre,
-        tipo=request.form["tipo"],
+        tipo=tipo,
         supervisor=request.form["supervisor"]
     )
     db.session.add(registro)
