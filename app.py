@@ -2657,6 +2657,18 @@ def guardar_incidencia():
 
     tipo = request.form["tipo"]
 
+    fecha_inicio = request.form.get("fecha_inicio", "").strip()
+    fecha_fin = request.form.get("fecha_fin", "").strip()
+
+    if not fecha_inicio or not fecha_fin:
+        return f"""
+        <h2>⚠️ FALTA FECHA</h2>
+        <p><b>{trabajador.nombre}</b></p>
+        <p>Debes ingresar fecha de inicio Y fecha de fin para registrar la incidencia.</p>
+        <br>
+        <a href="/incidencias">VOLVER A INTENTAR</a>
+        """
+
     descripciones = {
         "V": "VACACIONES",
         "LSG": "LICENCIA SIN GOCE",
@@ -2668,8 +2680,8 @@ def guardar_incidencia():
         nombre=trabajador.nombre,
         tipo=tipo,
         descripcion=descripciones[tipo],
-        fecha_inicio=request.form["fecha_inicio"],
-        fecha_fin=request.form["fecha_fin"],
+        fecha_inicio=fecha_inicio,
+        fecha_fin=fecha_fin,
         activo=True
     )
 
@@ -2680,8 +2692,8 @@ def guardar_incidencia():
     <h2>✅ INCIDENCIA REGISTRADA</h2>
     <p><b>{trabajador.nombre}</b></p>
     <p>Tipo: {tipo} — {descripciones[tipo]}</p>
-    <p>Desde: {request.form['fecha_inicio']}</p>
-    <p>Hasta: {request.form['fecha_fin']}</p>
+    <p>Desde: {fecha_inicio}</p>
+    <p>Hasta: {fecha_fin}</p>
     <br>
     <a href="/reporte_incidencias">VER REPORTE</a>
     &nbsp;&nbsp;
@@ -2731,8 +2743,14 @@ a { display:block; text-align:center; color:#64748b; font-size:12px; margin-top:
 @app.route("/filtrar_incidencias", methods=["POST"])
 def filtrar_incidencias():
 
-    fecha_inicio = request.form["fecha_inicio"]
-    fecha_fin = request.form["fecha_fin"]
+    fecha_inicio = request.form.get("fecha_inicio", "").strip()
+    fecha_fin = request.form.get("fecha_fin", "").strip()
+
+    if not fecha_inicio or not fecha_fin:
+        return """
+        <h2>Debes seleccionar ambas fechas</h2>
+        <a href="/reporte_incidencias">VOLVER</a>
+        """
 
     from datetime import datetime
     fi = datetime.strptime(fecha_inicio, "%Y-%m-%d")
