@@ -2858,6 +2858,34 @@ def exportar_incidencias_filtrado():
         as_attachment=True,
         download_name=f"incidencias_{fecha_inicio}_{fecha_fin}.xlsx"
     )
+
+@app.route("/buscar_incidencia_codigo/<codigo>")
+def buscar_incidencia_codigo(codigo):
+    registros = Incidencia.query.filter_by(codigo=codigo).all()
+    filas = ""
+    for r in registros:
+        filas += f"""
+        <tr>
+            <td>{r.id}</td>
+            <td>{r.codigo}</td>
+            <td>{r.nombre}</td>
+            <td>{r.tipo}</td>
+            <td>{r.descripcion}</td>
+            <td>{r.fecha_inicio}</td>
+            <td>{r.fecha_fin}</td>
+            <td>{r.activo}</td>
+            <td><a href="/desactivar_incidencia/{r.id}">DESACTIVAR</a></td>
+        </tr>
+        """
+    return f"""
+    <html><body style="font-family:sans-serif;padding:20px;">
+    <h2>Incidencias de {codigo}</h2>
+    <table border="1" cellpadding="8" style="border-collapse:collapse;">
+    <tr><th>ID</th><th>Codigo</th><th>Nombre</th><th>Tipo</th><th>Desc</th><th>Inicio</th><th>Fin</th><th>Activo</th><th>Accion</th></tr>
+    {filas}
+    </table>
+    </body></html>
+    """
 @app.route("/desactivar_incidencia/<int:id>")
 def desactivar_incidencia(id):
 
